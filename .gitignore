@@ -1,6 +1,10 @@
 .langgraph_api
 .vscode
+*pycache*
 *.egg-info
+
 build
+base-*
 examples
+
 .env
