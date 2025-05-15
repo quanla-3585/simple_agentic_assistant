@@ -16,29 +16,25 @@ from agentic_sun_assistant.prompts import *
 from agentic_sun_assistant.state import *
 from agentic_sun_assistant.tools import *
 
+from langgraph.checkpoint.memory import MemorySaver
+
 
 async def question_synthesize_agent(state:MessagesState, config: Configuration):
     
     """Agent to make more questions"""
-    
-    # Get configuration
+    # Get configuration, Initialize the model
     configurable = Configuration.from_runnable_config(config)
     main_agent_model = get_config_value(configurable.main_agent_model)
-    
-    # Initialize the model
     llm = init_chat_model(model=main_agent_model)
 
     # Get all tools
     available_tools, _ = get_main_agent_tools(config)
 
-    messages = state["messages"] # we extract all messages we had received. This is simple message caching.
+    # Get current messages stack. This is simple message caching
+    messages = state["messages"]
 
-    synthesized_questions = await llm.bind_tools(available_tools).ainvoke(
+    llm_response = await llm.bind_tools(available_tools).ainvoke(
                 [
-                    # {
-                    #     "role": "system",
-                    #     "content": "You are a question synthesizing agent, sole purpose is to create a set of questions decomposing the user-inputed question."
-                    # }
                     {
                         "role": "system",
                         "content": QUESTION_SYNTHESIZING_INSTRUCTION
@@ -46,10 +42,9 @@ async def question_synthesize_agent(state:MessagesState, config: Configuration):
                 ]
                 + messages
             )
-    print(synthesized_questions)
-    # state["messages"]+=synthesized_questions
+    print(llm_response)
 
-    return {"messages":synthesized_questions}
+    return {"messages":llm_response}
 
 async def simple_qa_agent(state:MessagesState, config: Configuration):
     """
@@ -161,39 +156,37 @@ def get_search_tool(config: RunnableConfig):
     configurable = Configuration.from_runnable_config(config)
     search_api = get_config_value(configurable.search_api)
 
-    # TODO: Configure other search functions as tools
     if search_api.lower() == "tavily":
-        # Use Tavily search tool
         return tavily_search
     else:
-        # Raise NotImplementedError for search APIs other than Tavily
         raise NotImplementedError(
-            f"The search API '{search_api}' is not yet supported in the multi-agent implementation. "
-            f"Currently, only Tavily is supported. Please use the graph-based implementation in "
-            f"src/open_deep_research/graph.py for other search APIs, or set search_api to 'tavily'."
+            f"Currently, only Tavily is supported."
         )
 
 def get_main_agent_tools(config:Configuration):
     """Get main agent's tools based on configuration"""
     websearch_tool = get_search_tool(config)
-    tool_list = [Rephraser, Planner, get_time_now, SimpleQAAgentHandover, PseudoRAG, websearch_tool]
+    tool_list = [Planner, get_time_now, PseudoRAG, websearch_tool]
     return tool_list, {tool.name: tool for tool in tool_list}
 
-async def main_agent_tools(state: GenericState, config: Configuration) -> Command[Literal["questions_synthesize_agent", "__end__"]]:
+async def main_agent_tools(
+        state: GenericState, config: Configuration
+    ) -> Command[Literal["questions_synthesize_agent", "__end__"]]:
     
     result = []
     _, main_agent_tools_by_name = get_main_agent_tools(config)
-    # if len(state["messages"]) == 0:
-    #     return Command(goto="__end__", update={"messages": result})
-    
+
+    # Check last message for tool calls
     for tool_call in state["messages"][-1].tool_calls:
+        
         # Get the tool
         tool = main_agent_tools_by_name[tool_call["name"]]
         
-        # Special handling for PseudoRAG
+        # switch-case for PseudoRAG
         if tool_call["name"] == "PseudoRAG":
             observation = invoke_pseudo_rag(tool_call["args"])
-        # Perform the tool call - use ainvoke for async tools
+
+        # other tool call - use ainvoke for async tools
         elif hasattr(tool, 'ainvoke'):
             observation = await tool.ainvoke(tool_call["args"])
         else:
@@ -204,13 +197,9 @@ async def main_agent_tools(state: GenericState, config: Configuration) -> Comman
                        "content": observation, 
                        "name": tool_call["name"], 
                        "tool_call_id": tool_call["id"]})
-        
-        # Check if the SimpleQAAgentHandover tool was called
-        if tool_call["name"] == "SimpleQAAgentHandover":
-            return Command(goto="simple_qa_agent", update={"messages": result})
-
+    
+    # last message no tools
     return Command(goto="questions_synthesize_agent", update={"messages": result})
-    # return {"messages":state["messages"]+result}
 
 
 # async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
@@ -268,13 +257,11 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
     return {"router_output":response.content}
 
 
+# Build the graph
 main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
 main_agent_builder.add_node("questions_synthesize_agent", question_synthesize_agent)
-# main_agent_builder.add_node("simple_qa_agent", simple_qa_agent)
 main_agent_builder.add_node("main_agent_tools", main_agent_tools)
 
-# Build the graph
-# main_agent_builder.add_node("router", router)
 
 main_agent_builder.add_edge(START, "questions_synthesize_agent")
 main_agent_builder.add_conditional_edges(
@@ -288,5 +275,8 @@ main_agent_builder.add_conditional_edges(
 )
 main_agent_builder.add_edge("main_agent_tools", "questions_synthesize_agent")
 main_agent_builder.add_edge("main_agent_tools", END)
+
+# from langgraph.checkpoint.memory import MemorySaver
+# memory = MemorySaver()
 
 graph = main_agent_builder.compile()

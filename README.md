@@ -1,3 +1,4 @@
+Clone this repo.
 Edit the `.env` file to customize the environment variables (for model selection, search tools, and other configuration settings):
 ```bash
 cp .env.example .env

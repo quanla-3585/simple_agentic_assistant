@@ -33,7 +33,6 @@ def get_config_value(value):
     else:
         return value.value
 
-@traceable
 async def tavily_search_async(search_queries, max_results: int = 5, topic: str = "general", include_raw_content: bool = True):
     """
     Performs concurrent web searches with the Tavily API
