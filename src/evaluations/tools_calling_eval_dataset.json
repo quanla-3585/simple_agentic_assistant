@@ -2,7 +2,7 @@
     {
       "id": 1,
       "user_input": "Where is the FooFirm employee handbook stored?",
-      "ideal_tools": ["RAG"],
+      "ideal_tools": ["PseudoRAG"],
       "efficiency_notes": "No use of WebSearch or Planner.",
       "notes": "Tests internal doc lookup with specific org context."
     },
@@ -16,28 +16,28 @@
     {
       "id": 3,
       "user_input": "What is FooFirm’s annual leave policy?",
-      "ideal_tools": ["RAG"],
-      "efficiency_notes": "No Planner or WebSearch; don’t call RAG multiple times.",
+      "ideal_tools": ["PseudoRAG"],
+      "efficiency_notes": "No Planner or WebSearch; don’t call PseudoRAG multiple times.",
       "notes": "Tests precise internal document retrieval."
     },
     {
       "id": 4,
       "user_input": "Who won the last FIFA World Cup?",
       "ideal_tools": ["WebSearch"],
-      "efficiency_notes": "Do not use RAG or Planner.",
+      "efficiency_notes": "Do not use PseudoRAG or Planner.",
       "notes": "Tests external knowledge call, not firm-specific."
     },
     {
       "id": 5,
       "user_input": "Can you help me draft a plan to onboard new interns, and also include how other firms do it?",
-      "ideal_tools": ["Planner", "RAG", "WebSearch"],
+      "ideal_tools": ["Planner", "PseudoRAG", "WebSearch"],
       "efficiency_notes": "Tools should be called in sequence with minimal redundancy.",
       "notes": "Tests Planner orchestration + multi-tool use."
     },
     {
       "id": 6,
       "user_input": "How do we usually report travel expenses?",
-      "ideal_tools": ["RAG"],
+      "ideal_tools": ["PseudoRAG"],
       "efficiency_notes": "No Planner unless ambiguity is high; no WebSearch.",
       "notes": "Tests ambiguity handling and tool escalation threshold."
     },
@@ -45,27 +45,27 @@
       "id": 7,
       "user_input": "Can you help me plan a 6-month project to upgrade our internal wiki?",
       "ideal_tools": ["Planner"],
-      "efficiency_notes": "Planner should break down before calling RAG/WebSearch.",
+      "efficiency_notes": "Planner should break down before calling PseudoRAG/WebSearch.",
       "notes": "Tests initiation of Planner for scoped tasks."
     },
     {
       "id": 8,
       "user_input": "What's the current time and where can I find the latest engineering OKRs?",
-      "ideal_tools": ["get_time_now", "RAG"],
-      "efficiency_notes": "No Planner, no redundant calls to RAG.",
+      "ideal_tools": ["get_time_now", "PseudoRAG"],
+      "efficiency_notes": "No Planner, no redundant calls to PseudoRAG.",
       "notes": "Tests multi-tool invocation within a single turn."
     },
     {
       "id": 9,
       "user_input": "What’s the weather like in NYC right now?",
       "ideal_tools": ["WebSearch"],
-      "efficiency_notes": "Should not say it can't help; no RAG.",
+      "efficiency_notes": "Should not say it can't help; no PseudoRAG.",
       "notes": "Tests real-time fact retrieval, not hallucination or fallback."
     },
     {
       "id": 10,
       "user_input": "Tell me about the history of FooFirm in the 1800s.",
-      "ideal_tools": ["RAG"],
+      "ideal_tools": ["PseudoRAG"],
       "efficiency_notes": "Should gracefully handle lack of relevant docs without redundant queries.",
       "notes": "Tests handling of poor recall + graceful degradation."
     }
