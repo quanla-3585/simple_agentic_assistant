@@ -18,6 +18,7 @@ from agentic_sun_assistant.tools import *
 
 from langgraph.checkpoint.memory import MemorySaver
 
+import logging
 
 async def question_synthesize_agent(state:MessagesState, config: Configuration):
     
@@ -33,7 +34,7 @@ async def question_synthesize_agent(state:MessagesState, config: Configuration):
     # Get current messages stack. This is simple message caching
     messages = state["messages"]
 
-    llm_response = await llm.bind_tools(available_tools).ainvoke(
+    llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
                 [
                     {
                         "role": "system",
@@ -214,13 +215,6 @@ async def question_agent_should_continue(state: GenericState) -> Literal["main_a
 
     # If the LLM makes a tool call, then perform an action
     if last_message.tool_calls:
-        # Check if the SimpleQAAgentHandover tool was called
-        for tool_call in last_message.tool_calls:
-            if tool_call["name"] == "SimpleQAAgentHandover":
-                # Route directly to simple_qa_agent
-                return "simple_qa_agent"
-        
-        # For other tool calls, go to main_agent_tools
         return "main_agent_tools"
     else:
         return END
@@ -258,25 +252,50 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
 
 
 # Build the graph
-main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
-main_agent_builder.add_node("questions_synthesize_agent", question_synthesize_agent)
-main_agent_builder.add_node("main_agent_tools", main_agent_tools)
+# main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
+# main_agent_builder.add_node("questions_synthesize_agent", question_synthesize_agent)
+# main_agent_builder.add_node("main_agent_tools", main_agent_tools)
 
 
-main_agent_builder.add_edge(START, "questions_synthesize_agent")
-main_agent_builder.add_conditional_edges(
-    "questions_synthesize_agent",
-    question_agent_should_continue,
-    {
-        # Name returned by should_continue : Name of next node to visit
-        "main_agent_tools": "main_agent_tools",
-        END: END,
-    },
-)
-main_agent_builder.add_edge("main_agent_tools", "questions_synthesize_agent")
-main_agent_builder.add_edge("main_agent_tools", END)
+# main_agent_builder.add_edge(START, "questions_synthesize_agent")
+# main_agent_builder.add_conditional_edges(
+#     "questions_synthesize_agent",
+#     question_agent_should_continue,
+#     {
+#         # Name returned by should_continue : Name of next node to visit
+#         "main_agent_tools": "main_agent_tools",
+#         END: END,
+#     },
+# )
+# main_agent_builder.add_edge("main_agent_tools", "questions_synthesize_agent")
+# main_agent_builder.add_edge("main_agent_tools", END)
 
 # from langgraph.checkpoint.memory import MemorySaver
 # memory = MemorySaver()
 
-graph = main_agent_builder.compile()
+def create_and_compile_graph():
+    # Build the graph
+    main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
+    main_agent_builder.add_node("questions_synthesize_agent", question_synthesize_agent)
+    main_agent_builder.add_node("main_agent_tools", main_agent_tools)
+
+    main_agent_builder.add_edge(START, "questions_synthesize_agent")
+    main_agent_builder.add_conditional_edges(
+        "questions_synthesize_agent",
+        question_agent_should_continue,
+        {
+            # Name returned by should_continue : Name of next node to visit
+            "main_agent_tools": "main_agent_tools",
+            END: END,
+        },
+    )
+    main_agent_builder.add_edge("main_agent_tools", "questions_synthesize_agent")
+    main_agent_builder.add_edge("main_agent_tools", END)
+
+    # Compile the graph
+    graph = main_agent_builder.compile()
+    logging.info("main_agent_builder Graph Compiled Successfully !")
+
+    return graph
+
+graph = create_and_compile_graph()

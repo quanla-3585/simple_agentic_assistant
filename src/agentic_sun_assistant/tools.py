@@ -36,7 +36,7 @@ def get_time_now() -> str:
     name_or_callable="PseudoRAG",
     description="""
     A mock RAG (Retrieval-Augmented Generation) system that simulates retrieving information from a graph database.
-    Use this tool to query for information related to specific topics or questions.
+    Use this tool to query for information only for internal org's documents from FooFirm. Any information not related to FooFirm is not here.
     The tool will return relevant context that can be used to answer the user's question.
     """
 )
