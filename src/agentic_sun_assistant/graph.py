@@ -172,7 +172,7 @@ def get_main_agent_tools(config:Configuration):
 
 async def main_agent_tools(
         state: GenericState, config: Configuration
-    ) -> Command[Literal["questions_synthesize_agent", "__end__"]]:
+    ) -> Command[Literal["main_agent", "__end__"]]:
     
     result = []
     _, main_agent_tools_by_name = get_main_agent_tools(config)
@@ -200,7 +200,7 @@ async def main_agent_tools(
                        "tool_call_id": tool_call["id"]})
     
     # last message no tools
-    return Command(goto="questions_synthesize_agent", update={"messages": result})
+    return Command(goto="main_agent", update={"messages": result})
 
 
 # async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
@@ -220,10 +220,10 @@ async def question_agent_should_continue(state: GenericState) -> Literal["main_a
         return END
 
 
-async def router(state: MessagesState, config: Configuration) -> Literal["questions_synthesize_agent", "simple_qa_agent"]:
+async def router(state: MessagesState, config: Configuration) -> Literal["main_agent", "simple_qa_agent"]:
     """
     Router function that analyzes the user's question and decides whether to route it to
-    the simple_qa_agent or the questions_synthesize_agent.
+    the simple_qa_agent or the main_agent.
     
     This is not an agent but a simple router that does some thinking to determine the best path.
     """
@@ -241,8 +241,9 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
         {
             "role": "system", 
             "content": """
+            
             You are a router for a multi-agents system, do routing for user questions input. There is two agents now in the system for routing: SimpleQA agent or question synthesizer agent.
-            Return 'questions_synthesize_agent' if you think this is a complex question that requires more complex handling, return 'simple_qa_agent' if you know that this is a trivial matter and should be handled by some simple agents.
+            Return 'main_agent' if you think this is a complex question that requires more complex handling, return 'simple_qa_agent' if you know that this is a trivial matter and should be handled by some simple agents.
         """},
     ] + messages)
 
@@ -253,13 +254,13 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
 
 # Build the graph
 # main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
-# main_agent_builder.add_node("questions_synthesize_agent", question_synthesize_agent)
+# main_agent_builder.add_node("main_agent", question_synthesize_agent)
 # main_agent_builder.add_node("main_agent_tools", main_agent_tools)
 
 
-# main_agent_builder.add_edge(START, "questions_synthesize_agent")
+# main_agent_builder.add_edge(START, "main_agent")
 # main_agent_builder.add_conditional_edges(
-#     "questions_synthesize_agent",
+#     "main_agent",
 #     question_agent_should_continue,
 #     {
 #         # Name returned by should_continue : Name of next node to visit
@@ -267,7 +268,7 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
 #         END: END,
 #     },
 # )
-# main_agent_builder.add_edge("main_agent_tools", "questions_synthesize_agent")
+# main_agent_builder.add_edge("main_agent_tools", "main_agent")
 # main_agent_builder.add_edge("main_agent_tools", END)
 
 # from langgraph.checkpoint.memory import MemorySaver
@@ -276,12 +277,12 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
 def create_and_compile_graph():
     # Build the graph
     main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
-    main_agent_builder.add_node("questions_synthesize_agent", question_synthesize_agent)
+    main_agent_builder.add_node("main_agent", question_synthesize_agent)
     main_agent_builder.add_node("main_agent_tools", main_agent_tools)
 
-    main_agent_builder.add_edge(START, "questions_synthesize_agent")
+    main_agent_builder.add_edge(START, "main_agent")
     main_agent_builder.add_conditional_edges(
-        "questions_synthesize_agent",
+        "main_agent",
         question_agent_should_continue,
         {
             # Name returned by should_continue : Name of next node to visit
@@ -289,7 +290,7 @@ def create_and_compile_graph():
             END: END,
         },
     )
-    main_agent_builder.add_edge("main_agent_tools", "questions_synthesize_agent")
+    main_agent_builder.add_edge("main_agent_tools", "main_agent")
     main_agent_builder.add_edge("main_agent_tools", END)
 
     # Compile the graph
