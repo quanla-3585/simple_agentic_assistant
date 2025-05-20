@@ -1,7 +1,7 @@
 from typing import List, Annotated, TypedDict, operator, Literal, Optional
 from pydantic import BaseModel, Field
 from enum import Enum
-
+from langchain_openai import ChatOpenAI, AzureChatOpenAI
 from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
 from langchain_core.runnables import RunnableConfig
@@ -19,6 +19,7 @@ from agentic_sun_assistant.tools import *
 from langgraph.checkpoint.memory import MemorySaver
 
 import logging
+import os
 
 async def question_synthesize_agent(state:MessagesState, config: Configuration):
     
@@ -26,7 +27,19 @@ async def question_synthesize_agent(state:MessagesState, config: Configuration):
     # Get configuration, Initialize the model
     configurable = Configuration.from_runnable_config(config)
     main_agent_model = get_config_value(configurable.main_agent_model)
-    llm = init_chat_model(model=main_agent_model)
+
+    # Load sensitive config from environment variables
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
+    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
+
+    llm = AzureChatOpenAI(
+        azure_endpoint="https://sun-ai.openai.azure.com/",
+        deployment_name=deployment_name,
+        api_version=api_version,
+        api_key=api_key
+        )
+
 
     # Get all tools
     available_tools, _ = get_main_agent_tools(config)
@@ -58,7 +71,18 @@ async def simple_qa_agent(state:MessagesState, config: Configuration):
     qa_agent_model = get_config_value(configurable.question_agent_model)
     
     # Initialize the model
-    llm = init_chat_model(model=qa_agent_model)
+    # llm = init_chat_model(model=qa_agent_model)
+    # Load sensitive config from environment variables
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
+    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
+
+    llm = AzureChatOpenAI(
+        azure_endpoint="https://sun-ai.openai.azure.com/",
+        deployment_name=deployment_name,
+        api_version=api_version,
+        api_key=api_key
+        )
 
     # Extract the handover data from the last message
     # Prepare the context for the QA agent
@@ -212,7 +236,6 @@ async def question_agent_should_continue(state: GenericState) -> Literal["main_a
         return END
 
     last_message = messages[-1]
-
     # If the LLM makes a tool call, then perform an action
     if last_message.tool_calls:
         return "main_agent_tools"
@@ -235,7 +258,18 @@ async def router(state: MessagesState, config: Configuration) -> Literal["questi
     qa_agent_model = get_config_value(configurable.question_agent_model)
     
     # Initialize the model
-    llm = init_chat_model(model=qa_agent_model)
+    # llm = init_chat_model(model=qa_agent_model)
+    # Load sensitive config from environment variables
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
+    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
+
+    llm = AzureChatOpenAI(
+        azure_endpoint="https://sun-ai.openai.azure.com/",
+        deployment_name=deployment_name,
+        api_version=api_version,
+        api_key=api_key
+    )
 
     response = await llm.ainvoke([
         {
