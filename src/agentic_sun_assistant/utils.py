@@ -8,6 +8,7 @@ import httpx
 import time
 from typing import List, Optional, Dict, Any, Union
 from urllib.parse import unquote
+from dotenv import load_dotenv
 
 from exa_py import Exa
 from linkup import LinkupClient
@@ -59,7 +60,8 @@ async def tavily_search_async(search_queries, max_results: int = 5, topic: str =
                     ]
                 }
     """
-    tavily_async_client = AsyncTavilyClient()
+    tavily_api_key = os.getenv('TAVILY_API_KEY')
+    tavily_async_client = AsyncTavilyClient(tavily_api_key)
     search_tasks = []
     for query in search_queries:
             search_tasks.append(
