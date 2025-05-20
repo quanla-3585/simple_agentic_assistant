@@ -1,7 +1,7 @@
 [
     {
       "id": 1,
-      "user_input": "Where is the FooFirm employee handbook stored?",
+      "user_input": "Where is the Sun Asterisk employee handbook stored?",
       "ideal_tools": ["RAG"],
       "efficiency_notes": "No use of WebSearch or Planner.",
       "notes": "Tests internal doc lookup with specific org context."
@@ -15,7 +15,7 @@
     },
     {
       "id": 3,
-      "user_input": "What is FooFirm’s annual leave policy?",
+      "user_input": "What is Sun Asterisk’s annual leave policy?",
       "ideal_tools": ["RAG"],
       "efficiency_notes": "No Planner or WebSearch; don’t call RAG multiple times.",
       "notes": "Tests precise internal document retrieval."
@@ -64,7 +64,7 @@
     },
     {
       "id": 10,
-      "user_input": "Tell me about the history of FooFirm in the 1800s.",
+      "user_input": "Tell me about the history of Sun Asterisk in the 1800s.",
       "ideal_tools": ["RAG"],
       "efficiency_notes": "Should gracefully handle lack of relevant docs without redundant queries.",
       "notes": "Tests handling of poor recall + graceful degradation."
