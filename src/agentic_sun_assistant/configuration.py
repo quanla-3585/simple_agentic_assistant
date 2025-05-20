@@ -29,7 +29,8 @@ class Configuration:
 
     search_api: SearchAPI = SearchAPI.TAVILY # Default to TAVILY
     search_api_config: Optional[Dict[str, Any]] = None
-    
+    # default_agent_
+
     # Graph-specific configuration
     number_of_queries: int = 2 # Number of search queries to generate per iteration
     max_search_depth: int = 2 # Maximum number of reflection + search iterations

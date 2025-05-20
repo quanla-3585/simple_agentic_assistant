@@ -15,26 +15,32 @@ from agentic_sun_assistant.utils import *
 from agentic_sun_assistant.prompts import *
 from agentic_sun_assistant.state import *
 from agentic_sun_assistant.tools import *
-
-from langgraph.checkpoint.memory import MemorySaver
+from agentic_sun_assistant.rag_db import MAIN_CHUNKS
 
 import logging
+
+class ReasoningOutputStructure(BaseModel):
+    """default output structure for reasoning text"""
+    reasoning_text: str = "Simple text explain the thought within the LLM"
+    requires_tool: bool = "Boolean for when a tool must be involved"
+    
 
 async def question_synthesize_agent(state:MessagesState, config: Configuration):
     
     """Agent to make more questions"""
-    # Get configuration, Initialize the model
-    configurable = Configuration.from_runnable_config(config)
-    main_agent_model = get_config_value(configurable.main_agent_model)
-    llm = init_chat_model(model=main_agent_model)
-
     # Get all tools
     available_tools, _ = get_main_agent_tools(config)
 
+    # Get configuration, Initialize the model
+    configurable = Configuration.from_runnable_config(config)
+    main_agent_model = get_config_value(configurable.main_agent_model)
+    llm = init_chat_model(model=main_agent_model, temperature=0.2)
+    
     # Get current messages stack. This is simple message caching
     messages = state["messages"]
+    llm_response = messages
 
-    llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
+    llm_response = await llm.bind_tools(available_tools, tool_choice="auto", parallel_tool_calls=False).ainvoke(
                 [
                     {
                         "role": "system",
@@ -43,7 +49,6 @@ async def question_synthesize_agent(state:MessagesState, config: Configuration):
                 ]
                 + messages
             )
-    print(llm_response)
 
     return {"messages":llm_response}
 
@@ -64,7 +69,7 @@ async def simple_qa_agent(state:MessagesState, config: Configuration):
     # Prepare the context for the QA agent
     
     # Get the answer from the model
-    response = await llm.ainvoke([
+    response = llm.invoke([
         {"role": "system", "content": SIMPLE_QA_AGENT_INSTRUCTION}] + state["messages"]
     )
     
@@ -73,6 +78,7 @@ async def simple_qa_agent(state:MessagesState, config: Configuration):
 
 # Mock database for PseudoRAG
 MOCK_KNOWLEDGE_BASE = {
+    "Common": MAIN_CHUNKS,
     "RND": {
         "ai": [
             "AI research at our company focuses on large language models and their applications in business contexts.",
@@ -204,7 +210,7 @@ async def main_agent_tools(
 
 
 # async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
-async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", END]:
+async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", "main_agent",  END]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
 
     messages = state["messages"]
@@ -216,7 +222,10 @@ async def question_agent_should_continue(state: GenericState) -> Literal["main_a
     # If the LLM makes a tool call, then perform an action
     if last_message.tool_calls:
         return "main_agent_tools"
-    else:
+    # Crude logic to force toolcall
+    elif "[REASONING]" in last_message.text() and "[ANSWER]" not in last_message.text():
+        return "main_agent"
+    else: # This should truncate the ReAct loop
         return END
 
 
@@ -252,28 +261,6 @@ async def router(state: MessagesState, config: Configuration) -> Literal["main_a
     return {"router_output":response.content}
 
 
-# Build the graph
-# main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
-# main_agent_builder.add_node("main_agent", question_synthesize_agent)
-# main_agent_builder.add_node("main_agent_tools", main_agent_tools)
-
-
-# main_agent_builder.add_edge(START, "main_agent")
-# main_agent_builder.add_conditional_edges(
-#     "main_agent",
-#     question_agent_should_continue,
-#     {
-#         # Name returned by should_continue : Name of next node to visit
-#         "main_agent_tools": "main_agent_tools",
-#         END: END,
-#     },
-# )
-# main_agent_builder.add_edge("main_agent_tools", "main_agent")
-# main_agent_builder.add_edge("main_agent_tools", END)
-
-# from langgraph.checkpoint.memory import MemorySaver
-# memory = MemorySaver()
-
 def create_and_compile_graph():
     # Build the graph
     main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
@@ -287,6 +274,7 @@ def create_and_compile_graph():
         {
             # Name returned by should_continue : Name of next node to visit
             "main_agent_tools": "main_agent_tools",
+            "main_agent": "main_agent",
             END: END,
         },
     )

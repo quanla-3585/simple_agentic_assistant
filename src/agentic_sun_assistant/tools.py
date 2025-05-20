@@ -25,7 +25,7 @@ class DepartmentEnum(str, Enum):
 @tool(
     name_or_callable="get_time_now",
     description="""
-    require no arguments, return full datetime of now
+    Return full system time of right now.
     """
 )
 def get_time_now() -> str:
