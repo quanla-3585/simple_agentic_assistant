@@ -20,12 +20,6 @@ from agentic_sun_assistant.rag_db import MAIN_CHUNKS
 import logging
 import os
 
-class ReasoningOutputStructure(BaseModel):
-    """default output structure for reasoning text"""
-    reasoning_text: str = "Simple text explain the thought within the LLM"
-    requires_tool: bool = "Boolean for when a tool must be involved"
-    
-
 async def question_synthesize_agent(state:MessagesState, config: Configuration):
     
     """Agent to make more questions"""
@@ -54,7 +48,7 @@ async def question_synthesize_agent(state:MessagesState, config: Configuration):
     messages = state["messages"]
     llm_response = messages
 
-    llm_response = await llm.bind_tools(available_tools, tool_choice="auto", parallel_tool_calls=False).ainvoke(
+    llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
                 [
                     {
                         "role": "system",
