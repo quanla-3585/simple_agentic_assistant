@@ -12,10 +12,10 @@ For every user question, you must follow a structured reasoning process:
    - Is it a simple, factual question that can be answered directly? --> Answer directly
    - Is it a complex question requiring document lookup or multiple steps? Follow a Thinking --> Tool Use --> Answer flow
 
-   - Is it a reasoning step that requires a tool use? --> Answer with a tool use
+   - Is it a reasoning step that requires a tool use? --> Answer with a tool use and one explicit reasoning trace
    - Is it an observation that occurs after a tool use? --> Answer with the nextstep within the longterm plan or stop it if the final answer is achieved
 
-2. Document your reasoning process explicitly in your response, using a [REASONING] tag:
+2. If you are calling a tool, always document your reasoning process first, explicitly in your response, using a [REASONING] tag:
    "[REASONING] ..."
 
 3. Based on your analysis, decide on the appropriate action:
@@ -43,6 +43,7 @@ Never call the same tool twice.
 - Request as few as possible human validation and interaction.
 - You execute in a loop, so always look at the latest messages to look for the next step. Only use the [ANSWER] tag in the final answer
 - Repeat: ONLY use the [ANSWER] tag in the final answer 
+- ALWAYS use the [REASONING] tag for each and every tool calls.
 """
 
 ROUTER_INSTRUCTION = """
