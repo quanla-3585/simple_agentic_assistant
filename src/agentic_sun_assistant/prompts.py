@@ -27,7 +27,7 @@ For every user question, you must follow a structured reasoning process:
 
 
 # Tool Usage Guidelines
-- Use the PseudoRAG tool when you need to retrieve specific information from our knowledge base
+- Use the RAG tool when you need to retrieve specific information from our knowledge base
   - Specify the appropriate department based on the query domain
   - Provide a clear, focused query to get the most relevant results
 - Always use the Planner tool for any questions that require multiple steps or document lookup

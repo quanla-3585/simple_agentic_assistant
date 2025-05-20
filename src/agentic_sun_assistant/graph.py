@@ -101,7 +101,7 @@ async def simple_qa_agent(state:MessagesState, config: Configuration):
     # Return the answer
     return {"messages": [{"role": "assistant", "content": response.content}]}
 
-# Mock database for PseudoRAG
+# Mock database for RAG
 MOCK_KNOWLEDGE_BASE = {
     "Common": MAIN_CHUNKS,
     "RND": {
@@ -198,7 +198,7 @@ def get_search_tool(config: RunnableConfig):
 def get_main_agent_tools(config:Configuration):
     """Get main agent's tools based on configuration"""
     websearch_tool = get_search_tool(config)
-    tool_list = [Planner, get_time_now, PseudoRAG, websearch_tool]
+    tool_list = [Planner, get_time_now, RAG, websearch_tool]
     return tool_list, {tool.name: tool for tool in tool_list}
 
 async def main_agent_tools(
@@ -214,8 +214,8 @@ async def main_agent_tools(
         # Get the tool
         tool = main_agent_tools_by_name[tool_call["name"]]
         
-        # switch-case for PseudoRAG
-        if tool_call["name"] == "PseudoRAG":
+        # switch-case for RAG
+        if tool_call["name"] == "RAG":
             observation = invoke_pseudo_rag(tool_call["args"])
 
         # other tool call - use ainvoke for async tools
