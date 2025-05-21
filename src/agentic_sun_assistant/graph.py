@@ -20,7 +20,7 @@ from agentic_sun_assistant.rag_db import MAIN_CHUNKS
 import logging
 import os
 
-async def question_synthesize_agent(state:MessagesState, config: Configuration):
+async def main_agent(state:MessagesState, config: Configuration):
     
     """Agent to make more questions"""
     
@@ -67,12 +67,13 @@ async def simple_qa_agent(state:MessagesState, config: Configuration):
     """
     
     # Get configuration
-    configurable = Configuration.from_runnable_config(config)
-    qa_agent_model = get_config_value(configurable.question_agent_model)
+    # configurable = Configuration.from_runnable_config(config)
+    # qa_agent_model = get_config_value(configurable.question_agent_model)
     
     # Initialize the model
     # llm = init_chat_model(model=qa_agent_model)
     # Load sensitive config from environment variables
+
     api_key = os.environ.get("AZURE_OPENAI_API_KEY")
     api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
     deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
@@ -293,7 +294,7 @@ async def router(state: MessagesState, config: Configuration) -> Literal["main_a
 def create_and_compile_graph():
     # Build the graph
     main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
-    main_agent_builder.add_node("main_agent", question_synthesize_agent)
+    main_agent_builder.add_node("main_agent", main_agent)
     main_agent_builder.add_node("main_agent_tools", main_agent_tools)
 
     main_agent_builder.add_edge(START, "main_agent")

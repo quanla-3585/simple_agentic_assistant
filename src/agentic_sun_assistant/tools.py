@@ -35,8 +35,9 @@ def get_time_now() -> str:
 @tool(
     name_or_callable="RAG",
     description="""
-    A mock RAG (Retrieval-Augmented Generation) system that simulates retrieving information from a graph database.
-    Use this tool to query for information only for internal org's documents from Sun Asterisk. Any information not related to Sun Asterisk is not here.
+    Use this tool to query for information only for internal org's documents from Sun Asterisk.
+    Currently, information is sparse and ONLY documents pertaining internal process and audit for handling documents is present. 
+    Any information not related to Sun Asterisk is not here.
     The tool will return relevant context that can be used to answer the user's question.
     """
 )
@@ -107,7 +108,7 @@ class Rephraser(BaseModel):
 @tool(
     name_or_callable="Planner", 
     description="""
-    Personal planner for drafting plans, use this extensively.
+    Personal planner for drafting plans, use this extensively. ALWAYS use this everytime the user ask anything.
     only have 1 field:
       - full_plan_text: the plan of execution in full. A plan is a list containing multiple steps of either reasoning or calling tools at each step.
 """)
