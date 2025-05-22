@@ -8,3 +8,7 @@ base-*
 examples
 
 .env
+
+streamlit_app.py
+
+.deepeval
