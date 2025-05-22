@@ -46,6 +46,7 @@ async def main_agent(state:MessagesState, config: Configuration):
 
     # Get current messages stack. This is simple message caching
     messages = state["messages"]
+    
     llm_response = messages
 
     llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
@@ -286,7 +287,7 @@ async def router(state: MessagesState, config: Configuration) -> Literal["main_a
         """},
     ] + messages)
 
-    print(response)
+    # print(response)
 
     return {"router_output":response.content}
 

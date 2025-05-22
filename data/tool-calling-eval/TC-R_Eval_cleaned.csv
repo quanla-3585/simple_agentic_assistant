@@ -1,0 +1,44 @@
+,QID,Difficulty,Question,Tools_Accuracy.Called_Tools,Tools_Accuracy.Expected_Tools,Tools_Accuracy.CT/ET,Tool_Call_Sequence_(TCS).Agents_TCS,Tool_Call_Sequence_(TCS).Expected_TCS,Tool_Call_Sequence_(TCS).Levenshtein_distance,Tool_Inputs.get_time_now.LLM_Inputs,Tool_Inputs.get_time_now.Expected_Inputs,Tool_Inputs.get_time_now.Recall,Tool_Inputs.tavily_search.LLM_Inputs,Tool_Inputs.tavily_search.Expected_Inputs,Tool_Inputs.tavily_search.Recall,Tool_Inputs.Planner.LLM_Inputs,Tool_Inputs.Planner.Expected_Inputs,Tool_Inputs.Planner.Recall,Tool_Inputs.RAG.LLM_Inputs,Tool_Inputs.RAG.Expected_Inputs,Tool_Inputs.RAG.Recall,Reasoning.LLM_Reasoning,Reasoning.Expected_Reasoning,Reasoning.Matched?
+0,2,Medium,Giờ làm việc theo quy định của công ty bắt đầu vào lúc nào?,,RAG,,,RAG,,,,,,,,,,,,"""Quy định về giờ làm việc""",,,Collect working hour information through RAG,
+1,3,Easy,"Tôi cảm ơn, hết rồi.",,,,,,,,,,,,,,,,,,,,Formal greetings,
+2,4,Easy,Còn bao nhiêu phút nữa là kết thúc ca làm việc buổi chiều?,,"get_time_now, RAG",,,"get_time_now, RAG",,,,,,,,,,,,"""Quy định về giờ làm việc""",,,"Collect time now
+Collect working hour information through RAG",
+3,5,Hard,tôi submit hợp đồng 8 ngày rồi mà chưa được trả lại thì tôi cần làm gì?,,"RAG, Planner, RAG",,"RAG, RAG, RAG, Planner, RAG, RAG, RAG, RAG","RAG, Planner, RAG",,,,,,,,,"(Plan tìm quy trình xử lý hợp đồng)
+(Plan để tìm thông tin liên hệ của Sun*)",,,"""Quy định về trình ký và duyệt hợp đồng""
+""Thông tin liên hệ Sun*""",,,"Collect overall contract processing info through RAG
+Planner for next steps for contract processing
+Collect detailed contract processing info through RAG",
+4,6,Medium,Tôi cần làm gì sau khi hoàn thành soạn thảo hợp đồng?,,RAG,,,RAG,,,,,,(Sun* liên hệ),,,(Plan để tìm thông tin liên hệ của Sun*),,,"""Quy trình chung về soạn thảo hợp đồng""",,,Collect overall contract processing info through RAG,
+5,7,Medium,"Tôi muốn có một kế hoạch học làm bánh chi tiết dài 20 ngày, với nguyên liệu chủ yếu là hoa quả trong mùa này và có sẵn ở Việt Nam.",,"Planner, get_time_now(), tavily_search",,,"Planner, get_time_now(), tavily_search",,,,,,"(Các loại bánh dễ làm), (Hoa quả phổ biến ở Việt Nam)",,,"(Plan để học làm bánh trong 20 ngày)
+(Plan tìm nguyên liệu phù hợp với thời điểm hiện tại)
+(Plan tìm thời điểm hiện tại",,,,,,"Get current month in year
+Online search for cake recipies
+Study plan",
+6,8,Medium,Kỳ World Cup tiếp theo được tổ chức ở đâu và còn bao nhiêu tháng nữa là tới mùa bóng lăn?,,"get_time_now(), tavily_search",,,"get_time_now(), tavily_search",,,,,,Kỳ World Cup tiếp theo,,,,,,,,,"Get today's date
+Online search for next WC info
+Do the substraction to find the days left",
+7,9,Hard,Còn bao nhiêu ngày nữa để chuẩn bị trước khi kỳ kiểm tra tiêu chuẩn ISO định kỳ lần kế tiếp của công ty diễn ra? Tôi cần một phương án học tập phù hợp với lượng thời gian này. ,,"Planner, RAG, tavily_search, get_time_now()",,"RAG, RAG, RAG, RAG, Planner, get_time_now, RAG, RAG, tavily_search","get_time_now(), RAG, tavily_search, Planner",,,,,,"(Các phương pháp học tập nhanh chóng & hiệu quả)
+",,,"(Plan tìm thời gian còn lại cho đến kỳ ISO tiếp theo)
+(Plan để ôn tập cho kỳ thi ISO)",,,"""thi ISO định kỳ""",,,"Search for company issued ISO test time (will fail) 
+Get today's date
+Search online for known ISO test time 
+Study plan",
+8,10,Hard,Tôi cần soạn thảo đầy đủ một hợp đồng thử việc theo quy định của pháp luật hiện hành và quy định của công ty.,,"Planner, tavily_search",,"RAG, get_time_now(), Planner, tavily_search","Planner, RAG, tavily_search",,,,,,(Quy định soạn thảo hợp đồng thử việc),,,(Plan soạn thảo hợp đồng lao động),,,"""Hợp đồng thử việc"", ""Quy định thử việc""",,,"Online search for labor law in Vietnam
+Collect template or info about SunAsterisks's fulltime contract
+Planning for more contract details",
+9,11,Medium,Bộ phận IFU đi du lịch ở đâu vào năm 2024?,,tavily_search,,,tavily_search,,,,,,(IFU du lịch 2024),,,,,,,,,,
+10,12,Medium,"Lên kế hoạch cho du lịch hè ở Quy Nhơn cho nhóm 30 người, trong khoảng ngân sách 8tr/1 người",,"Planner, tavily_search",,,"Planner, tavily_search, tavily_search",,,,,,"(Địa điểm du lịch Quy Nhơn)
+(Chí phí du lịch Quy Nhơn)",,,(Plan lên kế hoạch du lịch hè cho 30 người),,,,,,,
+11,13,Medium,Thời tiết ở Ninh Bình và dự đoán nhu cầu du lịch ở đó trong tháng 8?,,"Planner, tavily_search",,,"Planner, tavily_search, Planner, tavily_search",,,,,,"(Thời tiết Ninh Bình)
+(Thống kê lượt khách du lịch Ninh Bình)",,,"(Plan tìm thời tiết Ninh Bình trong tháng 8)
+(Plan tìm nhu cầu du lịch Ninh Bình trong tháng 8)",,,,,,,
+12,14,Hard,"Lập kế hoạch onboard thực tập sinh với mục tiêu giúp các nhân lực mới làm quen với quy trình, văn hóa và lịch sử của công ty,",,"Planner, RAG, tavily_search",,,"Planner, tavily_search, planner, RAG, RAG, RAG",,,,,,(Hoạt động onboard cho thực tập sinh),,,"(Plan onboard cho thực tập sinh)
+(Plan giúp nhân lực làm quen quỳ trình văn hóa lsu công ty)",,,"""Quy trình công ty""
+""Văn hóa công ty""
+""Lịch sử công ty""",,,,
+13,15,Medium,Chính sách nghỉ thai sản cho nam giới của công ty?,,RAG,,,RAG,,,,,,,,,,,,"""Chính sách thai sản cho nam giới""",,,,
+14,16,Hard,Tóm tắt về quy trình duyệt và lưu trữ cho văn bản đi trong nội quy của công ty. Đối chiếu quy trình này với chuẩn ISO mới nhất để tìm ra điểm lỗi thời của quy trình công ty. Tập trung vào văn bản kỹ thuật số có tính bảo mật cao. Lên kế hoạch phổ biến và áp dụng tiêu chuẩn mới nhất nếu cần.,,"RAG, tavily_search, Planner",,,"RAG, tavily_search, tavily_search, Planner",,,,,,(Tiêu chuẩn ISO về lưu trữ bảo mật văn bản đi mới nhất),,,(Kế hoạch phổ biến và áp dụng chuẩn ISO mới),,,"""tiêu chuẩn ISO về lưu trữ bảo mật văn bản đi""",,,,
+15,17,Medium,"Tôi bị mất quyền truy cập vào email công ty, tôi nên liên hệ ai và làm gì để khôi phục?",,"RAG, tavily_search",,,"RAG, tavily_search",,,,,,(Nhân viên phòng IT Sun Asterisk),,,,,,"""quy trình cấp phát và đổi mới tài khoản nhân viên""",,,,
+16,18,Hard,"Hãy đối chiếu quy trình onboarding hiện tại của công ty với các best practice toàn cầu, chỉ ra điểm thiếu sót, và đưa ra kế hoạch sửa đổi, bao gồm đào tạo cho các bộ phận liên quan.",,"RAG, tavily_search, Planner",,,"RAG, tavily_search, Planner",,,,,,(Quy trình onboarding theo tiêu chuẩn quốc tế),,,(Kế hoạch onboarding cho nhân viên mới),,,"""quy trình onboarding""",,,,
+17,19,Hard,"Tôi cần biết thời gian xử lý trung bình của phòng pháp chế với yêu cầu rà soát hợp đồng nội bộ. Nếu không có số liệu cụ thể trong tài liệu, hãy tra cứu quy chuẩn ngành và đề xuất KPI nội bộ.",,"RAG, tavily_search, Planner",,,"RAG, RAG, tavily_search, Planner",,,,,,(Quy trình tiêu chuẩn xử lý rà soát hợp đồng nội bộ),,,"(Kế hoạch khảo sát-đề xuất, thử nghiệm và ứng dụng tiêu chuẩn mới)",,,"""thời gian xử lý yêu cầu rà soát hợp đồng của phòng pháp chế""",,,,
+18,20,Medium,Employee Handbook của Sun Asterisk được lưu trữ ở đâu?,,RAG,,,RAG,,,,,,,,,,,,"""Employee Handbook""",,,,

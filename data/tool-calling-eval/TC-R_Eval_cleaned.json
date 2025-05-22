@@ -1,0 +1,923 @@
+[
+  {
+    "QID": 2,
+    "Difficulty": "Medium",
+    "Question": "Gi\u1edd l\u00e0m vi\u1ec7c theo quy \u0111\u1ecbnh c\u1ee7a c\u00f4ng ty b\u1eaft \u0111\u1ea7u v\u00e0o l\u00fac n\u00e0o?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Quy \u0111\u1ecbnh v\u1ec1 gi\u1edd l\u00e0m vi\u1ec7c\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Collect working hour information through RAG",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 3,
+    "Difficulty": "Easy",
+    "Question": "T\u00f4i c\u1ea3m \u01a1n, h\u1ebft r\u1ed3i.",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": null,
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": null,
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Formal greetings",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 4,
+    "Difficulty": "Easy",
+    "Question": "C\u00f2n bao nhi\u00eau ph\u00fat n\u1eefa l\u00e0 k\u1ebft th\u00fac ca l\u00e0m vi\u1ec7c bu\u1ed5i chi\u1ec1u?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "get_time_now",
+        "RAG"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "get_time_now",
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Quy \u0111\u1ecbnh v\u1ec1 gi\u1edd l\u00e0m vi\u1ec7c\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Collect time now\nCollect working hour information through RAG",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 5,
+    "Difficulty": "Hard",
+    "Question": "t\u00f4i submit h\u1ee3p \u0111\u1ed3ng 8 ng\u00e0y r\u1ed3i m\u00e0 ch\u01b0a \u0111\u01b0\u1ee3c tr\u1ea3 l\u1ea1i th\u00ec t\u00f4i c\u1ea7n l\u00e0m g\u00ec?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG",
+        "Planner",
+        "RAG"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": "RAG, RAG, RAG, Planner, RAG, RAG, RAG, RAG",
+      "Expected_TCS": [
+        "RAG",
+        "Planner",
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan t\u00ecm quy tr\u00ecnh x\u1eed l\u00fd h\u1ee3p \u0111\u1ed3ng)\n(Plan \u0111\u1ec3 t\u00ecm th\u00f4ng tin li\u00ean h\u1ec7 c\u1ee7a Sun*)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Quy \u0111\u1ecbnh v\u1ec1 tr\u00ecnh k\u00fd v\u00e0 duy\u1ec7t h\u1ee3p \u0111\u1ed3ng\"\n\"Th\u00f4ng tin li\u00ean h\u1ec7 Sun*\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Collect overall contract processing info through RAG\nPlanner for next steps for contract processing\nCollect detailed contract processing info through RAG",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 6,
+    "Difficulty": "Medium",
+    "Question": "T\u00f4i c\u1ea7n l\u00e0m g\u00ec sau khi ho\u00e0n th\u00e0nh so\u1ea1n th\u1ea3o h\u1ee3p \u0111\u1ed3ng?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Sun* li\u00ean h\u1ec7)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan \u0111\u1ec3 t\u00ecm th\u00f4ng tin li\u00ean h\u1ec7 c\u1ee7a Sun*)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Quy tr\u00ecnh chung v\u1ec1 so\u1ea1n th\u1ea3o h\u1ee3p \u0111\u1ed3ng\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Collect overall contract processing info through RAG",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 7,
+    "Difficulty": "Medium",
+    "Question": "T\u00f4i mu\u1ed1n c\u00f3 m\u1ed9t k\u1ebf ho\u1ea1ch h\u1ecdc l\u00e0m b\u00e1nh chi ti\u1ebft d\u00e0i 20 ng\u00e0y, v\u1edbi nguy\u00ean li\u1ec7u ch\u1ee7 y\u1ebfu l\u00e0 hoa qu\u1ea3 trong m\u00f9a n\u00e0y v\u00e0 c\u00f3 s\u1eb5n \u1edf Vi\u1ec7t Nam.",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "Planner",
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "Planner",
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(C\u00e1c lo\u1ea1i b\u00e1nh d\u1ec5 l\u00e0m), (Hoa qu\u1ea3 ph\u1ed5 bi\u1ebfn \u1edf Vi\u1ec7t Nam)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan \u0111\u1ec3 h\u1ecdc l\u00e0m b\u00e1nh trong 20 ng\u00e0y)\n(Plan t\u00ecm nguy\u00ean li\u1ec7u ph\u00f9 h\u1ee3p v\u1edbi th\u1eddi \u0111i\u1ec3m hi\u1ec7n t\u1ea1i)\n(Plan t\u00ecm th\u1eddi \u0111i\u1ec3m hi\u1ec7n t\u1ea1i",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Get current month in year\nOnline search for cake recipies\nStudy plan",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 8,
+    "Difficulty": "Medium",
+    "Question": "K\u1ef3 World Cup ti\u1ebfp theo \u0111\u01b0\u1ee3c t\u1ed5 ch\u1ee9c \u1edf \u0111\u00e2u v\u00e0 c\u00f2n bao nhi\u00eau th\u00e1ng n\u1eefa l\u00e0 t\u1edbi m\u00f9a b\u00f3ng l\u0103n?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "K\u1ef3 World Cup ti\u1ebfp theo",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Get today's date\nOnline search for next WC info\nDo the substraction to find the days left",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 9,
+    "Difficulty": "Hard",
+    "Question": "C\u00f2n bao nhi\u00eau ng\u00e0y n\u1eefa \u0111\u1ec3 chu\u1ea9n b\u1ecb tr\u01b0\u1edbc khi k\u1ef3 ki\u1ec3m tra ti\u00eau chu\u1ea9n ISO \u0111\u1ecbnh k\u1ef3 l\u1ea7n k\u1ebf ti\u1ebfp c\u1ee7a c\u00f4ng ty di\u1ec5n ra? T\u00f4i c\u1ea7n m\u1ed9t ph\u01b0\u01a1ng \u00e1n h\u1ecdc t\u1eadp ph\u00f9 h\u1ee3p v\u1edbi l\u01b0\u1ee3ng th\u1eddi gian n\u00e0y. ",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "Planner",
+        "RAG",
+        "tavily_search",
+        "get_time_now()"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": "RAG, RAG, RAG, RAG, Planner, get_time_now, RAG, RAG, tavily_search",
+      "Expected_TCS": [
+        "get_time_now()",
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(C\u00e1c ph\u01b0\u01a1ng ph\u00e1p h\u1ecdc t\u1eadp nhanh ch\u00f3ng & hi\u1ec7u qu\u1ea3)\n",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan t\u00ecm th\u1eddi gian c\u00f2n l\u1ea1i cho \u0111\u1ebfn k\u1ef3 ISO ti\u1ebfp theo)\n(Plan \u0111\u1ec3 \u00f4n t\u1eadp cho k\u1ef3 thi ISO)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"thi ISO \u0111\u1ecbnh k\u1ef3\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Search for company issued ISO test time (will fail) \nGet today's date\nSearch online for known ISO test time \nStudy plan",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 10,
+    "Difficulty": "Hard",
+    "Question": "T\u00f4i c\u1ea7n so\u1ea1n th\u1ea3o \u0111\u1ea7y \u0111\u1ee7 m\u1ed9t h\u1ee3p \u0111\u1ed3ng th\u1eed vi\u1ec7c theo quy \u0111\u1ecbnh c\u1ee7a ph\u00e1p lu\u1eadt hi\u1ec7n h\u00e0nh v\u00e0 quy \u0111\u1ecbnh c\u1ee7a c\u00f4ng ty.",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "Planner",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": "RAG, get_time_now(), Planner, tavily_search",
+      "Expected_TCS": [
+        "Planner",
+        "RAG",
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Quy \u0111\u1ecbnh so\u1ea1n th\u1ea3o h\u1ee3p \u0111\u1ed3ng th\u1eed vi\u1ec7c)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan so\u1ea1n th\u1ea3o h\u1ee3p \u0111\u1ed3ng lao \u0111\u1ed9ng)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"H\u1ee3p \u0111\u1ed3ng th\u1eed vi\u1ec7c\", \"Quy \u0111\u1ecbnh th\u1eed vi\u1ec7c\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": "Online search for labor law in Vietnam\nCollect template or info about SunAsterisks's fulltime contract\nPlanning for more contract details",
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 11,
+    "Difficulty": "Medium",
+    "Question": "B\u1ed9 ph\u1eadn IFU \u0111i du l\u1ecbch \u1edf \u0111\u00e2u v\u00e0o n\u0103m 2024?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(IFU du l\u1ecbch 2024)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 12,
+    "Difficulty": "Medium",
+    "Question": "L\u00ean k\u1ebf ho\u1ea1ch cho du l\u1ecbch h\u00e8 \u1edf Quy Nh\u01a1n cho nh\u00f3m 30 ng\u01b0\u1eddi, trong kho\u1ea3ng ng\u00e2n s\u00e1ch 8tr/1 ng\u01b0\u1eddi",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "Planner",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "Planner",
+        "tavily_search",
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(\u0110\u1ecba \u0111i\u1ec3m du l\u1ecbch Quy Nh\u01a1n)\n(Ch\u00ed ph\u00ed du l\u1ecbch Quy Nh\u01a1n)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan l\u00ean k\u1ebf ho\u1ea1ch du l\u1ecbch h\u00e8 cho 30 ng\u01b0\u1eddi)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 13,
+    "Difficulty": "Medium",
+    "Question": "Th\u1eddi ti\u1ebft \u1edf Ninh B\u00ecnh v\u00e0 d\u1ef1 \u0111o\u00e1n nhu c\u1ea7u du l\u1ecbch \u1edf \u0111\u00f3 trong th\u00e1ng 8?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "Planner",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "Planner",
+        "tavily_search",
+        "Planner",
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Th\u1eddi ti\u1ebft Ninh B\u00ecnh)\n(Th\u1ed1ng k\u00ea l\u01b0\u1ee3t kh\u00e1ch du l\u1ecbch Ninh B\u00ecnh)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan t\u00ecm th\u1eddi ti\u1ebft Ninh B\u00ecnh trong th\u00e1ng 8)\n(Plan t\u00ecm nhu c\u1ea7u du l\u1ecbch Ninh B\u00ecnh trong th\u00e1ng 8)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 14,
+    "Difficulty": "Hard",
+    "Question": "L\u1eadp k\u1ebf ho\u1ea1ch onboard th\u1ef1c t\u1eadp sinh v\u1edbi m\u1ee5c ti\u00eau gi\u00fap c\u00e1c nh\u00e2n l\u1ef1c m\u1edbi l\u00e0m quen v\u1edbi quy tr\u00ecnh, v\u0103n h\u00f3a v\u00e0 l\u1ecbch s\u1eed c\u1ee7a c\u00f4ng ty,",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "Planner",
+        "RAG",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "Planner",
+        "tavily_search",
+        "planner",
+        "RAG",
+        "RAG",
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Ho\u1ea1t \u0111\u1ed9ng onboard cho th\u1ef1c t\u1eadp sinh)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Plan onboard cho th\u1ef1c t\u1eadp sinh)\n(Plan gi\u00fap nh\u00e2n l\u1ef1c l\u00e0m quen qu\u1ef3 tr\u00ecnh v\u0103n h\u00f3a lsu c\u00f4ng ty)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Quy tr\u00ecnh c\u00f4ng ty\"\n\"V\u0103n h\u00f3a c\u00f4ng ty\"\n\"L\u1ecbch s\u1eed c\u00f4ng ty\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 15,
+    "Difficulty": "Medium",
+    "Question": "Ch\u00ednh s\u00e1ch ngh\u1ec9 thai s\u1ea3n cho nam gi\u1edbi c\u1ee7a c\u00f4ng ty?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Ch\u00ednh s\u00e1ch thai s\u1ea3n cho nam gi\u1edbi\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 16,
+    "Difficulty": "Hard",
+    "Question": "T\u00f3m t\u1eaft v\u1ec1 quy tr\u00ecnh duy\u1ec7t v\u00e0 l\u01b0u tr\u1eef cho v\u0103n b\u1ea3n \u0111i trong n\u1ed9i quy c\u1ee7a c\u00f4ng ty. \u0110\u1ed1i chi\u1ebfu quy tr\u00ecnh n\u00e0y v\u1edbi chu\u1ea9n ISO m\u1edbi nh\u1ea5t \u0111\u1ec3 t\u00ecm ra \u0111i\u1ec3m l\u1ed7i th\u1eddi c\u1ee7a quy tr\u00ecnh c\u00f4ng ty. T\u1eadp trung v\u00e0o v\u0103n b\u1ea3n k\u1ef9 thu\u1eadt s\u1ed1 c\u00f3 t\u00ednh b\u1ea3o m\u1eadt cao. L\u00ean k\u1ebf ho\u1ea1ch ph\u1ed5 bi\u1ebfn v\u00e0 \u00e1p d\u1ee5ng ti\u00eau chu\u1ea9n m\u1edbi nh\u1ea5t n\u1ebfu c\u1ea7n.",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG",
+        "tavily_search",
+        "tavily_search",
+        "Planner"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Ti\u00eau chu\u1ea9n ISO v\u1ec1 l\u01b0u tr\u1eef b\u1ea3o m\u1eadt v\u0103n b\u1ea3n \u0111i m\u1edbi nh\u1ea5t)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(K\u1ebf ho\u1ea1ch ph\u1ed5 bi\u1ebfn v\u00e0 \u00e1p d\u1ee5ng chu\u1ea9n ISO m\u1edbi)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"ti\u00eau chu\u1ea9n ISO v\u1ec1 l\u01b0u tr\u1eef b\u1ea3o m\u1eadt v\u0103n b\u1ea3n \u0111i\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 17,
+    "Difficulty": "Medium",
+    "Question": "T\u00f4i b\u1ecb m\u1ea5t quy\u1ec1n truy c\u1eadp v\u00e0o email c\u00f4ng ty, t\u00f4i n\u00ean li\u00ean h\u1ec7 ai v\u00e0 l\u00e0m g\u00ec \u0111\u1ec3 kh\u00f4i ph\u1ee5c?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG",
+        "tavily_search"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG",
+        "tavily_search"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Nh\u00e2n vi\u00ean ph\u00f2ng IT Sun Asterisk)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"quy tr\u00ecnh c\u1ea5p ph\u00e1t v\u00e0 \u0111\u1ed5i m\u1edbi t\u00e0i kho\u1ea3n nh\u00e2n vi\u00ean\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 18,
+    "Difficulty": "Hard",
+    "Question": "H\u00e3y \u0111\u1ed1i chi\u1ebfu quy tr\u00ecnh onboarding hi\u1ec7n t\u1ea1i c\u1ee7a c\u00f4ng ty v\u1edbi c\u00e1c best practice to\u00e0n c\u1ea7u, ch\u1ec9 ra \u0111i\u1ec3m thi\u1ebfu s\u00f3t, v\u00e0 \u0111\u01b0a ra k\u1ebf ho\u1ea1ch s\u1eeda \u0111\u1ed5i, bao g\u1ed3m \u0111\u00e0o t\u1ea1o cho c\u00e1c b\u1ed9 ph\u1eadn li\u00ean quan.",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Quy tr\u00ecnh onboarding theo ti\u00eau chu\u1ea9n qu\u1ed1c t\u1ebf)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(K\u1ebf ho\u1ea1ch onboarding cho nh\u00e2n vi\u00ean m\u1edbi)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"quy tr\u00ecnh onboarding\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 19,
+    "Difficulty": "Hard",
+    "Question": "T\u00f4i c\u1ea7n bi\u1ebft th\u1eddi gian x\u1eed l\u00fd trung b\u00ecnh c\u1ee7a ph\u00f2ng ph\u00e1p ch\u1ebf v\u1edbi y\u00eau c\u1ea7u r\u00e0 so\u00e1t h\u1ee3p \u0111\u1ed3ng n\u1ed9i b\u1ed9. N\u1ebfu kh\u00f4ng c\u00f3 s\u1ed1 li\u1ec7u c\u1ee5 th\u1ec3 trong t\u00e0i li\u1ec7u, h\u00e3y tra c\u1ee9u quy chu\u1ea9n ng\u00e0nh v\u00e0 \u0111\u1ec1 xu\u1ea5t KPI n\u1ed9i b\u1ed9.",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG",
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(Quy tr\u00ecnh ti\u00eau chu\u1ea9n x\u1eed l\u00fd r\u00e0 so\u00e1t h\u1ee3p \u0111\u1ed3ng n\u1ed9i b\u1ed9)",
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "(K\u1ebf ho\u1ea1ch kh\u1ea3o s\u00e1t-\u0111\u1ec1 xu\u1ea5t, th\u1eed nghi\u1ec7m v\u00e0 \u1ee9ng d\u1ee5ng ti\u00eau chu\u1ea9n m\u1edbi)",
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"th\u1eddi gian x\u1eed l\u00fd y\u00eau c\u1ea7u r\u00e0 so\u00e1t h\u1ee3p \u0111\u1ed3ng c\u1ee7a ph\u00f2ng ph\u00e1p ch\u1ebf\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  },
+  {
+    "QID": 20,
+    "Difficulty": "Medium",
+    "Question": "Employee Handbook c\u1ee7a Sun Asterisk \u0111\u01b0\u1ee3c l\u01b0u tr\u1eef \u1edf \u0111\u00e2u?",
+    "Tools_Accuracy": {
+      "Called_Tools": null,
+      "Expected_Tools": [
+        "RAG"
+      ],
+      "CT/ET": null
+    },
+    "Tool_Call_Sequence_(TCS)": {
+      "Agents_TCS": null,
+      "Expected_TCS": [
+        "RAG"
+      ],
+      "Levenshtein_distance": null
+    },
+    "Tool_Inputs": {
+      "get_time_now": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "tavily_search": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "Planner": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": null,
+        "Recall": null
+      },
+      "RAG": {
+        "LLM_Inputs": null,
+        "Expected_Inputs": "\"Employee Handbook\"",
+        "Recall": null
+      }
+    },
+    "Reasoning": {
+      "LLM_Reasoning": null,
+      "Expected_Reasoning": null,
+      "Matched?": null
+    }
+  }
+]

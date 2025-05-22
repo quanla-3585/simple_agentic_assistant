@@ -108,8 +108,9 @@ class Rephraser(BaseModel):
 @tool(
     name_or_callable="Planner", 
     description="""
-    Personal planner for drafting plans, use this extensively. ALWAYS use this everytime the user ask anything.
-    only have 1 field:
+    ALWAYS use this everytime the user ask anything. 
+    This is not user's planner, this is assistant's planner tool.
+    Sunbot's personal planner for drafting plans, only have 1 field:
       - full_plan_text: the plan of execution in full. A plan is a list containing multiple steps of either reasoning or calling tools at each step.
 """)
 class Planner(BaseModel):
