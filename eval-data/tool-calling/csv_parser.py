@@ -1,4 +1,5 @@
 import pandas as pd
+import json
 
 DATASET_CSV_FILEPATH = "data/tool-calling-eval/ToolCall-ReasoningEvaluationSet.csv"
 
@@ -31,12 +32,6 @@ raw_dataset.columns = flat_columns
 
 print(raw_dataset.columns)
 
-# print(raw_dataset["Question"])
-raw_dataset.to_csv("./data/tool-calling-eval/TC-R_Eval_cleaned.csv")
-question_col_name = "Question"
-
-import json
-
 def nested_dict_from_flat(flat_dict):
     nested = {}
     for key, value in flat_dict.items():
@@ -64,5 +59,5 @@ def preprocess_row(row):
 json_list = [nested_dict_from_flat(preprocess_row(row)) for _, row in raw_dataset.iterrows()]
 
 # Export to JSON file
-with open("./data/tool-calling-eval/TC-R_Eval_cleaned.json", "w") as f:
+with open("./eval-data/tool-calling/TC-R_Eval_cleaned.json", "w") as f:
     json.dump(json_list, f, indent=2)
