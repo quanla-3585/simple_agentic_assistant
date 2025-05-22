@@ -21,9 +21,9 @@ dotenv.load_dotenv()
 eval_graph   = create_and_compile_graph()
 
 # DATASET_PATH = "src/evaluations/tools_calling_eval_dataset.json"
-DATASET_PATH = "eval-data/tool-calling/TC-R_Eval_cleaned.json"
+DATASET_PATH = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
 
-eval_dataset = json.load(open(DATASET_PATH, 'r')) #[:5]
+eval_dataset = json.load(open(DATASET_PATH, 'r'))[:1]
 eval_results = [{} for _ in eval_dataset]
 
 print(eval_graph.input_schema)
