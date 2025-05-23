@@ -101,7 +101,7 @@ async def main_agent(state:MainAgentState, config: Configuration):
         try:
             for key_ in llm_response_parsing.keys():
                 if key_ == "messages": continue
-                if isinstance(state[key_], list): 
+                if isinstance(state[key_], List): 
                     state.update({key_: state[key_]+llm_response_parsing[key_]})
                 else: state.update({key_: llm_response_parsing[key_]})
         except Exception as e:
