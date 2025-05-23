@@ -12,23 +12,30 @@ from deepeval.metrics   import AnswerRelevancyMetric
 from deepeval.evaluate  import DisplayConfig
 
 from langchain_core.messages import AIMessage
+from langgraph.graph.graph import CompiledGraph
 
 from agentic_sun_assistant.graph import create_and_compile_graph
 
-
-# Real, not mocked
+# Set up envs
 dotenv.load_dotenv()
 eval_graph   = create_and_compile_graph()
 
-# DATASET_PATH = "src/evaluations/tools_calling_eval_dataset.json"
+# TODO: Add args parsing
+# TODO: change this to args parsed later
 DATASET_PATH = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
-
 eval_dataset = json.load(open(DATASET_PATH, 'r'))[:1]
+# TODO: this is terrible, switch to functional programming
 eval_results = [{} for _ in eval_dataset]
 
-print(eval_graph.input_schema)
 
-async def arun_datapoint(input:str):
+# STEP 1: Run Inference for Inputs
+# STEP 2: Collect Infered Data, Merge with Input
+# STEP 3: Run Evaluation on data
+# STEP 4: Export Report
+
+
+# STEP 1: Run Inference for Inputs
+async def arun_datapoint(input:str, eval_graph: CompiledGraph):
     """Run 1 eval datapoint and handle exceptions"""
 
     try:
@@ -44,14 +51,17 @@ async def arun_datapoint(input:str):
             "messages":[]
         }
 
-async def arun_dataset(eval_dataset):
+async def arun_dataset(eval_dataset: dict, eval_graph:CompiledGraph) -> dict:
     """async run evaluation on all of the cases"""
 
     user_inputs    = [_["Question"] for _ in eval_dataset]
 
     run_results = await tqdm.asyncio.tqdm.gather(
-        *[arun_datapoint(ui_) for ui_ in user_inputs]
+        *[arun_datapoint(ui_, eval_graph) for ui_ in user_inputs]
     )
+
+    # print(run_results[0]["final_answer"])
+    # print(run_results[0]["tool_calls_agg"])
     
     for i in range(len(user_inputs)):
         eval_results[i]["user_input"]  = user_inputs[i]
@@ -59,60 +69,66 @@ async def arun_dataset(eval_dataset):
         eval_results[i]["tcs"]         = eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"]
         eval_results[i]["state"]       = run_results[i]
 
-asyncio.run(arun_dataset(eval_dataset))
+asyncio.run(arun_dataset(eval_dataset, eval_graph))
 
-test_cases   = []
-sum_norm_lvs = 0
-count_cases  = 0
+# eval_dataset = json.load(open(DATASET_PATH, 'r'))[:1]
+# eval_results = [{} for _ in eval_dataset]
 
-for run_ in eval_results:
-
-    tools_called = []
-    for msg in run_["state"]["messages"]:
-        tools_called += getattr(msg, "tool_calls", [])
-
-    tools_called = [_["name"] for _ in tools_called]
-    print(tools_called)
-
-    # Collect data for evaluation
-    input          = run_["user_input"]
-    actual_output  = run_["state"]["messages"][-1].content if len(run_["state"]["messages"])>0 else ""
-    tools_called   = [ToolCall(name=n) for n in list(set(tools_called))]
-    expected_tools = [ToolCall(name=n) for n in run_["ideal_tools"]] if run_["ideal_tools"] is not None else []
-
-    # Skip cases that does not require a tool chain
-    expected_tcs  = run_["tcs"] if run_["tcs"] is not None else []
-    if expected_tcs is not []:
-        tcs           = tools_called
-        max_len       = max(len(expected_tcs), len(tcs))
-        lvs_dist      = textdistance.levenshtein.distance(tcs,expected_tcs)
-        if max_len == 0:
-            norm_lvs_dist = 1    
-        else: norm_lvs_dist = lvs_dist/max_len
-        sum_norm_lvs += norm_lvs_dist
-        count_cases  += 1
-
-    test_case = LLMTestCase(
-        input          = input,
-        actual_output  = actual_output,
-        tools_called   = tools_called,
-        expected_tools = expected_tools
-    )
-
-    test_cases.append(test_case)
-
-tools_correctness = ToolCorrectnessMetric(strict_mode=False)
-answer_revelancy  = AnswerRelevancyMetric(threshold=0.7, model="gpt-4.1-nano", include_reason=True)
+# print(eval_graph.input_schema)
 
 
-# Run metrics
-# Tools Accuracy
-evaluate(
-    test_cases     = test_cases, 
-    metrics        = [tools_correctness, answer_revelancy],
-    display_config = DisplayConfig(
-                            verbose_mode=False,
-                            show_indicator=True
-                        )
-)
-print(f"TCS_LevensteinDist_avg : {sum_norm_lvs/count_cases}")
+# test_cases   = []
+# sum_norm_lvs = 0
+# count_cases  = 0
+
+# for run_ in eval_results:
+
+#     tools_called = []
+#     for msg in run_["state"]["messages"]:
+#         tools_called += getattr(msg, "tool_calls", [])
+
+#     tools_called = [_["name"] for _ in tools_called]
+#     print(tools_called)
+
+#     # Collect data for evaluation
+#     input          = run_["user_input"]
+#     actual_output  = run_["state"]["messages"][-1].content if len(run_["state"]["messages"])>0 else ""
+#     tools_called   = [ToolCall(name=n) for n in list(set(tools_called))]
+#     expected_tools = [ToolCall(name=n) for n in run_["ideal_tools"]] if run_["ideal_tools"] is not None else []
+
+#     # Skip cases that does not require a tool chain
+#     expected_tcs  = run_["tcs"] if run_["tcs"] is not None else []
+#     if expected_tcs is not []:
+#         tcs           = tools_called
+#         max_len       = max(len(expected_tcs), len(tcs))
+#         lvs_dist      = textdistance.levenshtein.distance(tcs,expected_tcs)
+#         if max_len == 0:
+#             norm_lvs_dist = 1    
+#         else: norm_lvs_dist = lvs_dist/max_len
+#         sum_norm_lvs += norm_lvs_dist
+#         count_cases  += 1
+
+#     test_case = LLMTestCase(
+#         input          = input,
+#         actual_output  = actual_output,
+#         tools_called   = tools_called,
+#         expected_tools = expected_tools
+#     )
+
+#     test_cases.append(test_case)
+
+# tools_correctness = ToolCorrectnessMetric(strict_mode=False)
+# answer_revelancy  = AnswerRelevancyMetric(threshold=0.7, model="gpt-4.1-nano", include_reason=True)
+
+
+# # Run metrics
+# # Tools Accuracy
+# evaluate(
+#     test_cases     = test_cases, 
+#     metrics        = [tools_correctness, answer_revelancy],
+#     display_config = DisplayConfig(
+#                             verbose_mode=False,
+#                             show_indicator=True
+#                         )
+# )
+# print(f"TCS_LevensteinDist_avg : {sum_norm_lvs/count_cases}")

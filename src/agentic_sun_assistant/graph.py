@@ -4,6 +4,7 @@ from enum import Enum
 from langchain_openai import ChatOpenAI, AzureChatOpenAI
 from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
+from langchain_core.messages import HumanMessage, AIMessage, BaseMessage, ToolMessage
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import MessagesState
 
@@ -13,14 +14,44 @@ from langgraph.graph import START, END, StateGraph
 from agentic_sun_assistant.configuration import Configuration
 from agentic_sun_assistant.utils import *
 from agentic_sun_assistant.prompts import *
-from agentic_sun_assistant.state import *
+from agentic_sun_assistant.state import MainAgentState
 from agentic_sun_assistant.tools import *
 from agentic_sun_assistant.rag_db import MAIN_CHUNKS
 
 import logging
 import os
 
-async def main_agent(state:MessagesState, config: Configuration):
+def _parse_message(message: BaseMessage) -> dict:
+    """Parse individual message to my state defs, ready to merge to state
+        In:
+            message: the message
+        Out:
+            results: a dict containing fields ready to merge/append/override my current state
+    """
+    results = {}
+    if isinstance(message, HumanMessage):
+        return {"user_questions": [message.content], "final_answer": ""} #refresh final answer at every new follow ups
+    
+    elif isinstance(message, AIMessage):
+        logging.info(f"PARSING AI MESSAGE: {message}")
+        if message.tool_calls:
+            results["tool_calls_agg"] = [message.tool_calls]
+        if "[ANSWER]" in message.content:
+            try:
+                results["final_answer"] =  message.content.split("[ANSWER]")[-1]
+            except:
+                logging.warning("Failed Answer parsing, dumping all to var.")
+                results["final_answer"] =  message.content
+        if "[REASONING]" in message.content:
+            results["reasoning_traces"] = [message.content]
+    
+    else:
+        logging.warning(f"Unknown message instance passed for parsing {message.type}")
+
+    return results
+    
+        
+async def main_agent(state:MainAgentState, config: Configuration):
     
     """Agent to make more questions"""
     
@@ -42,13 +73,13 @@ async def main_agent(state:MessagesState, config: Configuration):
         deployment_name=deployment_name,
         api_version=api_version,
         api_key=api_key
-        )
+    )
 
     # Get current messages stack. This is simple message caching
     messages = state["messages"]
     
+    # Incase there are failures
     llm_response = messages
-
     llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
                 [
                     {
@@ -59,7 +90,30 @@ async def main_agent(state:MessagesState, config: Configuration):
                 + messages
             )
 
-    return {"messages":llm_response}
+    # some cheap trick to init state, TODO: refactor
+    if len(messages) == 1:
+        state.update({"reasoning_traces": []})
+        state.update({"tool_calls_agg"  : []})
+        state.update({"final_answer"    : ""})
+    else:
+        # for i_ in range(state["len_msgs_last_loop"], len(llm_response)+len(messages)):
+        llm_response_parsing = _parse_message(llm_response)
+        try:
+            for key_ in llm_response_parsing.keys():
+                if key_ == "messages": continue
+                if isinstance(state[key_], list): 
+                    state.update({key_: state[key_]+llm_response_parsing[key_]})
+                else: state.update({key_: llm_response_parsing[key_]})
+        except Exception as e:
+            logging.warning(f"STATE UPDATE FAILED with parsed info {llm_response_parsing}, threw exception: {e}")
+
+    #propagate the message stack
+    state.update({"len_msgs_last_loop": len(messages)})
+    
+    #update some states
+    state.update({"messages":llm_response})
+
+    return state
 
 async def simple_qa_agent(state:MessagesState, config: Configuration):
     """
@@ -198,7 +252,7 @@ def get_main_agent_tools(config:Configuration):
     return tool_list, {tool.name: tool for tool in tool_list}
 
 async def main_agent_tools(
-        state: GenericState, config: Configuration
+        state: MainAgentState, config: Configuration
     ) -> Command[Literal["main_agent", "__end__"]]:
     
     result = []
@@ -230,8 +284,8 @@ async def main_agent_tools(
     return Command(goto="main_agent", update={"messages": result})
 
 
-# async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
-async def question_agent_should_continue(state: GenericState) -> Literal["main_agent_tools", "main_agent",  END]:
+# async def question_agent_should_continue(state: MainAgentState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
+async def question_agent_should_continue(state: MainAgentState) -> Literal["main_agent_tools", "main_agent",  END]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
 
     messages = state["messages"]
@@ -239,7 +293,10 @@ async def question_agent_should_continue(state: GenericState) -> Literal["main_a
         return END
 
     last_message = messages[-1]
-    # If the LLM makes a tool call, then perform an action
+    if isinstance(last_message, HumanMessage):
+        return "main_agent"
+
+    # If the LLM makes a tool call, then perform an actio
     if last_message.tool_calls:
         return "main_agent_tools"
     # Crude logic to force toolcall
@@ -294,7 +351,7 @@ async def router(state: MessagesState, config: Configuration) -> Literal["main_a
 
 def create_and_compile_graph():
     # Build the graph
-    main_agent_builder = StateGraph(GenericState, input=MessagesState, config_schema=Configuration)
+    main_agent_builder = StateGraph(MainAgentState, config_schema=Configuration)
     main_agent_builder.add_node("main_agent", main_agent)
     main_agent_builder.add_node("main_agent_tools", main_agent_tools)
 
