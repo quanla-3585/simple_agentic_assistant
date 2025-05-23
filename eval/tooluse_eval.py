@@ -28,7 +28,7 @@ eval_graph   = create_and_compile_graph()
 # TODO: Add args parsing
 # TODO: change this to args parsed later
 DATASET_PATH = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
-eval_dataset = json.load(open(DATASET_PATH, 'r'))
+eval_dataset = json.load(open(DATASET_PATH, 'r'))[:10]
 # TODO: this is terrible, switch to functional programming
 
 
@@ -77,7 +77,6 @@ async def arun_dataset(
     )
     
     for i in range(len(user_inputs)):
-        print(run_results[i]["tool_calls_agg"])
         eval_results[i]["id"] = eval_dataset[i]["QID"]
         eval_results[i]["user_input"]   = user_inputs[i]
         
@@ -92,7 +91,7 @@ async def arun_dataset(
         if eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"] == None:
             eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"] = []
         eval_results[i]["expected_tcs"] = eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"]
-        eval_results[i]["actual_tcs"]   = run_results[i]["tool_calls_agg"]
+        eval_results[i]["actual_tcs"]   = getattr(run_results[i], "tool_calls_agg", [])
 
         # eval_results[i]["actual_tcs"]   = getattr(run_results[i], "tool_calls_agg", [])
     

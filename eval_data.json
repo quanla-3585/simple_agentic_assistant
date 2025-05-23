@@ -8,74 +8,7 @@
     "expected_tcs": [
       "RAG"
     ],
-    "actual_tcs": [
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "gi\u1edd l\u00e0m vi\u1ec7c",
-            "department": "HR"
-          },
-          "id": "call_9S8n00BQqQhypYil0Ld80Z58",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "gi\u1edd l\u00e0m vi\u1ec7c",
-            "department": "HR"
-          },
-          "id": "call_9S8n00BQqQhypYil0Ld80Z58",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "gi\u1edd l\u00e0m vi\u1ec7c",
-            "department": "HR"
-          },
-          "id": "call_vLYjfpctV3Si2NzSixmLArXo",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "gi\u1edd l\u00e0m vi\u1ec7c",
-            "department": "HR"
-          },
-          "id": "call_9S8n00BQqQhypYil0Ld80Z58",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "gi\u1edd l\u00e0m vi\u1ec7c",
-            "department": "HR"
-          },
-          "id": "call_9S8n00BQqQhypYil0Ld80Z58",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "gi\u1edd l\u00e0m vi\u1ec7c",
-            "department": "HR"
-          },
-          "id": "call_vLYjfpctV3Si2NzSixmLArXo",
-          "type": "tool_call"
-        }
-      ]
-    ]
+    "actual_tcs": []
   },
   {
     "id": 3,
@@ -88,7 +21,6 @@
     "id": 4,
     "user_input": "C\u00f2n bao nhi\u00eau ph\u00fat n\u1eefa l\u00e0 k\u1ebft th\u00fac ca l\u00e0m vi\u1ec7c bu\u1ed5i chi\u1ec1u?",
     "expected_tools": {
-      "get_time_now": null,
       "RAG": "\"Quy \u0111\u1ecbnh v\u1ec1 gi\u1edd l\u00e0m vi\u1ec7c\""
     },
     "expected_tcs": [
@@ -109,74 +41,7 @@
       "Planner",
       "RAG"
     ],
-    "actual_tcs": [
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "tr\u1ea1ng th\u00e1i h\u1ee3p \u0111\u1ed3ng \u0111\u00e3 submit",
-            "department": "IFU"
-          },
-          "id": "call_1jk2zGZwHvlSiEiY2VmGmiH3",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "tr\u1ea1ng th\u00e1i h\u1ee3p \u0111\u1ed3ng \u0111\u00e3 submit",
-            "department": "IFU"
-          },
-          "id": "call_1jk2zGZwHvlSiEiY2VmGmiH3",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "li\u00ean h\u1ec7 b\u1ed9 ph\u1eadn ph\u1ee5 tr\u00e1ch h\u1ee3p \u0111\u1ed3ng",
-            "department": "IFU"
-          },
-          "id": "call_hwd1iI2pDUtAgicjChQCN1GB",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "tr\u1ea1ng th\u00e1i h\u1ee3p \u0111\u1ed3ng \u0111\u00e3 submit",
-            "department": "IFU"
-          },
-          "id": "call_1jk2zGZwHvlSiEiY2VmGmiH3",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "tr\u1ea1ng th\u00e1i h\u1ee3p \u0111\u1ed3ng \u0111\u00e3 submit",
-            "department": "IFU"
-          },
-          "id": "call_1jk2zGZwHvlSiEiY2VmGmiH3",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "li\u00ean h\u1ec7 b\u1ed9 ph\u1eadn ph\u1ee5 tr\u00e1ch h\u1ee3p \u0111\u1ed3ng",
-            "department": "IFU"
-          },
-          "id": "call_hwd1iI2pDUtAgicjChQCN1GB",
-          "type": "tool_call"
-        }
-      ]
-    ]
+    "actual_tcs": []
   },
   {
     "id": 6,
@@ -187,65 +52,73 @@
     "expected_tcs": [
       "RAG"
     ],
-    "actual_tcs": [
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "ki\u1ec3m tra l\u1ea1i n\u1ed9i dung h\u1ee3p \u0111\u1ed3ng",
-            "department": "IFU"
-          },
-          "id": "call_HpqYNk9tZwsqhaAy19DknwQV",
-          "type": "tool_call"
-        },
-        {
-          "name": "RAG",
-          "args": {
-            "query": "g\u1eedi h\u1ee3p \u0111\u1ed3ng cho c\u00e1c b\u00ean li\u00ean quan",
-            "department": "IFU"
-          },
-          "id": "call_27oxeWOCHMM1NJUopP6csozl",
-          "type": "tool_call"
-        },
-        {
-          "name": "RAG",
-          "args": {
-            "query": "l\u01b0u tr\u1eef b\u1ea3n sao c\u1ee7a h\u1ee3p \u0111\u1ed3ng",
-            "department": "IFU"
-          },
-          "id": "call_HZflLGssNHKFkvCWt4yTNcRn",
-          "type": "tool_call"
-        }
-      ],
-      [
-        {
-          "name": "RAG",
-          "args": {
-            "query": "ki\u1ec3m tra l\u1ea1i n\u1ed9i dung h\u1ee3p \u0111\u1ed3ng",
-            "department": "IFU"
-          },
-          "id": "call_HpqYNk9tZwsqhaAy19DknwQV",
-          "type": "tool_call"
-        },
-        {
-          "name": "RAG",
-          "args": {
-            "query": "g\u1eedi h\u1ee3p \u0111\u1ed3ng cho c\u00e1c b\u00ean li\u00ean quan",
-            "department": "IFU"
-          },
-          "id": "call_27oxeWOCHMM1NJUopP6csozl",
-          "type": "tool_call"
-        },
-        {
-          "name": "RAG",
-          "args": {
-            "query": "l\u01b0u tr\u1eef b\u1ea3n sao c\u1ee7a h\u1ee3p \u0111\u1ed3ng",
-            "department": "IFU"
-          },
-          "id": "call_HZflLGssNHKFkvCWt4yTNcRn",
-          "type": "tool_call"
-        }
-      ]
-    ]
+    "actual_tcs": []
+  },
+  {
+    "id": 7,
+    "user_input": "T\u00f4i mu\u1ed1n c\u00f3 m\u1ed9t k\u1ebf ho\u1ea1ch h\u1ecdc l\u00e0m b\u00e1nh chi ti\u1ebft d\u00e0i 20 ng\u00e0y, v\u1edbi nguy\u00ean li\u1ec7u ch\u1ee7 y\u1ebfu l\u00e0 hoa qu\u1ea3 trong m\u00f9a n\u00e0y v\u00e0 c\u00f3 s\u1eb5n \u1edf Vi\u1ec7t Nam.",
+    "expected_tools": {
+      "Planner": "(Plan \u0111\u1ec3 h\u1ecdc l\u00e0m b\u00e1nh trong 20 ng\u00e0y)\n(Plan t\u00ecm nguy\u00ean li\u1ec7u ph\u00f9 h\u1ee3p v\u1edbi th\u1eddi \u0111i\u1ec3m hi\u1ec7n t\u1ea1i)\n(Plan t\u00ecm th\u1eddi \u0111i\u1ec3m hi\u1ec7n t\u1ea1i",
+      "tavily_search": "(C\u00e1c lo\u1ea1i b\u00e1nh d\u1ec5 l\u00e0m), (Hoa qu\u1ea3 ph\u1ed5 bi\u1ebfn \u1edf Vi\u1ec7t Nam)"
+    },
+    "expected_tcs": [
+      "Planner",
+      "get_time_now()",
+      "tavily_search"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 8,
+    "user_input": "K\u1ef3 World Cup ti\u1ebfp theo \u0111\u01b0\u1ee3c t\u1ed5 ch\u1ee9c \u1edf \u0111\u00e2u v\u00e0 c\u00f2n bao nhi\u00eau th\u00e1ng n\u1eefa l\u00e0 t\u1edbi m\u00f9a b\u00f3ng l\u0103n?",
+    "expected_tools": {
+      "tavily_search": "K\u1ef3 World Cup ti\u1ebfp theo"
+    },
+    "expected_tcs": [
+      "get_time_now()",
+      "tavily_search"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 9,
+    "user_input": "C\u00f2n bao nhi\u00eau ng\u00e0y n\u1eefa \u0111\u1ec3 chu\u1ea9n b\u1ecb tr\u01b0\u1edbc khi k\u1ef3 ki\u1ec3m tra ti\u00eau chu\u1ea9n ISO \u0111\u1ecbnh k\u1ef3 l\u1ea7n k\u1ebf ti\u1ebfp c\u1ee7a c\u00f4ng ty di\u1ec5n ra? T\u00f4i c\u1ea7n m\u1ed9t ph\u01b0\u01a1ng \u00e1n h\u1ecdc t\u1eadp ph\u00f9 h\u1ee3p v\u1edbi l\u01b0\u1ee3ng th\u1eddi gian n\u00e0y. ",
+    "expected_tools": {
+      "Planner": "(Plan t\u00ecm th\u1eddi gian c\u00f2n l\u1ea1i cho \u0111\u1ebfn k\u1ef3 ISO ti\u1ebfp theo)\n(Plan \u0111\u1ec3 \u00f4n t\u1eadp cho k\u1ef3 thi ISO)",
+      "RAG": "\"thi ISO \u0111\u1ecbnh k\u1ef3\"",
+      "tavily_search": "(C\u00e1c ph\u01b0\u01a1ng ph\u00e1p h\u1ecdc t\u1eadp nhanh ch\u00f3ng & hi\u1ec7u qu\u1ea3)\n"
+    },
+    "expected_tcs": [
+      "get_time_now()",
+      "RAG",
+      "tavily_search",
+      "Planner"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 10,
+    "user_input": "T\u00f4i c\u1ea7n so\u1ea1n th\u1ea3o \u0111\u1ea7y \u0111\u1ee7 m\u1ed9t h\u1ee3p \u0111\u1ed3ng th\u1eed vi\u1ec7c theo quy \u0111\u1ecbnh c\u1ee7a ph\u00e1p lu\u1eadt hi\u1ec7n h\u00e0nh v\u00e0 quy \u0111\u1ecbnh c\u1ee7a c\u00f4ng ty.",
+    "expected_tools": {
+      "Planner": "(Plan so\u1ea1n th\u1ea3o h\u1ee3p \u0111\u1ed3ng lao \u0111\u1ed9ng)",
+      "tavily_search": "(Quy \u0111\u1ecbnh so\u1ea1n th\u1ea3o h\u1ee3p \u0111\u1ed3ng th\u1eed vi\u1ec7c)"
+    },
+    "expected_tcs": [
+      "Planner",
+      "RAG",
+      "tavily_search"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 11,
+    "user_input": "B\u1ed9 ph\u1eadn IFU \u0111i du l\u1ecbch \u1edf \u0111\u00e2u v\u00e0o n\u0103m 2024?",
+    "expected_tools": {
+      "tavily_search": "(IFU du l\u1ecbch 2024)"
+    },
+    "expected_tcs": [
+      "tavily_search"
+    ],
+    "actual_tcs": []
   }
 ]
