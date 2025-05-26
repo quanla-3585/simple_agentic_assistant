@@ -354,41 +354,6 @@ async def router(state: MessagesState, config: Configuration) -> Literal["main_a
     return {"router_output":response.content}
 
 
-async def initial_planning(state: MainAgentState, config: Configuration):
-    
-    messages = state["messages"]
-    
-    # Get configuration
-    configurable = Configuration.from_runnable_config(config)
-    qa_agent_model = get_config_value(configurable.question_agent_model)
-    
-    # Initialize the model
-    # llm = init_chat_model(model=qa_agent_model)
-    # Load sensitive config from environment variables
-    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
-    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
-    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
-
-    llm = AzureChatOpenAI(
-        azure_endpoint="https://sun-ai.openai.azure.com/",
-        deployment_name=deployment_name,
-        api_version=api_version,
-        api_key=api_key
-    )
-
-    response = await llm.ainvoke([
-        {
-            "role": "system", 
-            "content": """
-            
-            You are a planning agent for an chatbot system, do routing for user questions input. There is two agents now in the system for routing: SimpleQA agent or question synthesizer agent.
-            Return 'main_agent' if you think this is a complex question that requires more complex handling, return 'simple_qa_agent' if you know that this is a trivial matter and should be handled by some simple agents.
-        """},
-    ] + messages)
-
-
-
-
 def create_and_compile_graph():
     # Build the graph
     main_agent_builder = StateGraph(MainAgentState, config_schema=Configuration)

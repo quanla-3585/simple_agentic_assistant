@@ -27,6 +27,9 @@ from agentic_sun_assistant.graph import create_and_compile_graph
 
 dotenv.load_dotenv()
 
+#==================================================================================#
+#===== Get variables and set global variables =====================================#
+#==================================================================================#
 
 client      = Together()
 eval_graph  = create_and_compile_graph()
@@ -39,6 +42,10 @@ INFERED_DATA_PATH = "infered_data.json"
 
 with open(DATASET_PATH, 'r', encoding="utf-8") as eval_file:
     eval_dataset = json.load(eval_file)
+
+#==================================================================================#
+#===== Start Inference Process ====================================================#
+#==================================================================================#
 
 async def ainfer_datapoint(input:str, eval_graph: CompiledGraph):
     """Run 1 eval datapoint and handle exceptions"""
@@ -186,16 +193,14 @@ async def inference_pipeline(
         res.append(infered_datapoint)
     
     with open(inference_results_save_path, 'w') as file:
-        json.dump(res, file, indent=2)
+        json.dump(res, file, indent=2, ensure_ascii=False)
 
-# asyncio.run(inference_pipeline(eval_dataset, eval_graph, "infered_data.json"))
+asyncio.run(inference_pipeline(eval_dataset, eval_graph, "infered_data.json"))
 
 #==================================================================================#
-#===== This concludes the inference process, we must then assess this results =====#
+#===== Start Evaluation Process ===================================================#
 #==================================================================================#
 
-
-# STEP 3  : Run Evaluation on data
 test_cases   = []
 sum_norm_lvs = 0
 count_cases  = 0
@@ -333,6 +338,11 @@ def eval_all(
     print(res)
     return pd.DataFrame(res)
 
-infered_dataset       = json.load(open(INFERED_DATA_PATH, 'r'))
+infered_dataset   = json.load(open(INFERED_DATA_PATH, 'r'))
+evaluation_result = eval_all(infered_dataset)
 
-eval_all(infered_dataset).to_csv("per_row_report.csv")
+#==================================================================================#
+#===== Save to report, we are currently using a CSV ===============================#
+#==================================================================================#
+
+evaluation_result.to_csv("per_row_report.csv")
