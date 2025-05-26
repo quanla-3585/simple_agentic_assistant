@@ -16,7 +16,7 @@ from agentic_sun_assistant.utils import *
 from agentic_sun_assistant.prompts import *
 from agentic_sun_assistant.state import MainAgentState
 from agentic_sun_assistant.tools import *
-from agentic_sun_assistant.rag_db import MAIN_CHUNKS
+from agentic_sun_assistant.rag_db import MOCK_KNOWLEDGE_BASE
 
 import logging
 import os
@@ -49,7 +49,6 @@ def _parse_message(message: BaseMessage) -> dict:
         logging.warning(f"Unknown message instance passed for parsing {message.type}")
 
     return results
-    
         
 async def main_agent(state:MainAgentState, config: Configuration):
     
@@ -120,93 +119,6 @@ async def main_agent(state:MainAgentState, config: Configuration):
 
     return state
 
-async def simple_qa_agent(state:MessagesState, config: Configuration):
-    """
-    Simple QA agent that provides direct answers to straightforward questions.
-    This agent is designed to handle factual, direct questions without complex reasoning.
-    """
-    
-    # Get configuration
-    # configurable = Configuration.from_runnable_config(config)
-    # qa_agent_model = get_config_value(configurable.question_agent_model)
-    
-    # Initialize the model
-    # llm = init_chat_model(model=qa_agent_model)
-    # Load sensitive config from environment variables
-
-    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
-    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
-    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
-
-    llm = AzureChatOpenAI(
-        azure_endpoint="https://sun-ai.openai.azure.com/",
-        deployment_name=deployment_name,
-        api_version=api_version,
-        api_key=api_key
-        )
-
-    # Extract the handover data from the last message
-    # Prepare the context for the QA agent
-    
-    # Get the answer from the model
-    response = llm.invoke([
-        {"role": "system", "content": SIMPLE_QA_AGENT_INSTRUCTION}] + state["messages"]
-    )
-    
-    # Return the answer
-    return {"messages": [{"role": "assistant", "content": response.content}]}
-
-# Mock database for RAG
-MOCK_KNOWLEDGE_BASE = {
-    "Common": MAIN_CHUNKS,
-    "RND": {
-        "ai": [
-            "AI research at our company focuses on large language models and their applications in business contexts.",
-            "Our R&D team has developed several prototype AI systems for internal use, including document analysis and code generation.",
-            "The latest AI project involves developing a RAG system that can query our internal knowledge graph."
-        ],
-        "research": [
-            "Research methodologies employed by our team include A/B testing, user studies, and literature reviews.",
-            "Our research process typically involves hypothesis formation, experimentation, and peer review.",
-            "Recent research has focused on improving retrieval mechanisms for knowledge graphs."
-        ],
-        "development": [
-            "Development practices include agile methodologies, CI/CD pipelines, and code reviews.",
-            "Our development team uses Python, TypeScript, and Rust for most projects.",
-            "The development roadmap for Q3 includes implementing a new graph database system."
-        ]
-    },
-    "AIE": {
-        "engineering": [
-            "AI Engineering team is responsible for deploying and maintaining AI systems in production.",
-            "Our engineering stack includes Docker, Kubernetes, and various cloud services.",
-            "Engineering challenges include scaling inference for large language models."
-        ],
-        "deployment": [
-            "Deployment processes include rigorous testing, gradual rollout, and monitoring.",
-            "We deploy new models on a bi-weekly basis after thorough validation.",
-            "Deployment metrics include latency, throughput, and error rates."
-        ]
-    },
-    "IFU": {
-        "infrastructure": [
-            "Infrastructure team manages our cloud resources, on-premise servers, and networking.",
-            "Our infrastructure is primarily based on AWS with some services on Azure.",
-            "Infrastructure costs are monitored and optimized on a monthly basis."
-        ],
-        "security": [
-            "Security protocols include regular audits, penetration testing, and access control reviews.",
-            "All data is encrypted both in transit and at rest using industry-standard protocols.",
-            "Security training is mandatory for all employees on a quarterly basis."
-        ]
-    },
-    "HR": {
-        "compensation and benefits": [
-            "Pay day is at 30th every month."
-        ]
-    }
-}
-
 def invoke_pseudo_rag(args):
     """
     Mock implementation of a RAG system that retrieves information from a simulated knowledge base.
@@ -216,7 +128,7 @@ def invoke_pseudo_rag(args):
     max_results = args.get("max_results", 3)
     
     # Get the department data
-    dept_data = MOCK_KNOWLEDGE_BASE
+    dept_data = MOCK_KNOWLEDGE_BASE.get(args.get("department", "Common"), MOCK_KNOWLEDGE_BASE["Common"])
     
     # Find relevant information based on the query
     results = []
@@ -235,8 +147,9 @@ def invoke_pseudo_rag(args):
     if not results:
         return f"No information found for query '{query}' in department {department}."
     
-    return MOCK_KNOWLEDGE_BASE
+    # return results
     # return "\n\n".join(results)
+    return MOCK_KNOWLEDGE_BASE
 
 def get_search_tool(config: RunnableConfig):
     """Get the appropriate search tool based on configuration"""
@@ -288,7 +201,6 @@ async def main_agent_tools(
     # last message no tools
     return Command(goto="main_agent", update={"messages": result})
 
-
 # async def question_agent_should_continue(state: MainAgentState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
 async def question_agent_should_continue(state: MainAgentState) -> Literal["main_agent_tools", "main_agent",  END]:
     """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
@@ -310,50 +222,6 @@ async def question_agent_should_continue(state: MainAgentState) -> Literal["main
     else: # This should truncate the ReAct loop
         return END
 
-
-async def router(state: MessagesState, config: Configuration) -> Literal["main_agent", "simple_qa_agent"]:
-    """
-    Router function that analyzes the user's question and decides whether to route it to
-    the simple_qa_agent or the main_agent.
-    
-    This is not an agent but a simple router that does some thinking to determine the best path.
-    """
-    # Get the user's question from the messages
-    messages = state["messages"]
-    
-    # Get configuration
-    configurable = Configuration.from_runnable_config(config)
-    qa_agent_model = get_config_value(configurable.question_agent_model)
-    
-    # Initialize the model
-    # llm = init_chat_model(model=qa_agent_model)
-    # Load sensitive config from environment variables
-    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
-    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
-    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
-
-    llm = AzureChatOpenAI(
-        azure_endpoint="https://sun-ai.openai.azure.com/",
-        deployment_name=deployment_name,
-        api_version=api_version,
-        api_key=api_key
-    )
-
-    response = await llm.ainvoke([
-        {
-            "role": "system", 
-            "content": """
-            
-            You are a router for a multi-agents system, do routing for user questions input. There is two agents now in the system for routing: SimpleQA agent or question synthesizer agent.
-            Return 'main_agent' if you think this is a complex question that requires more complex handling, return 'simple_qa_agent' if you know that this is a trivial matter and should be handled by some simple agents.
-        """},
-    ] + messages)
-
-    # print(response)
-
-    return {"router_output":response.content}
-
-
 async def initial_planning(state: MainAgentState, config: Configuration):
     
     messages = state["messages"]
@@ -363,7 +231,6 @@ async def initial_planning(state: MainAgentState, config: Configuration):
     qa_agent_model = get_config_value(configurable.question_agent_model)
     
     # Initialize the model
-    # llm = init_chat_model(model=qa_agent_model)
     # Load sensitive config from environment variables
     api_key = os.environ.get("AZURE_OPENAI_API_KEY")
     api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
@@ -381,7 +248,7 @@ async def initial_planning(state: MainAgentState, config: Configuration):
             "role": "system", 
             "content": """
             
-            You are a planning agent for an chatbot system, do routing for user questions input. There is two agents now in the system for routing: SimpleQA agent or question synthesizer agent.
+            You are a planning agent for an QA system, do routing for user questions input. There is two agents now in the system for routing: SimpleQA agent or question synthesizer agent.
             Return 'main_agent' if you think this is a complex question that requires more complex handling, return 'simple_qa_agent' if you know that this is a trivial matter and should be handled by some simple agents.
         """},
     ] + messages)

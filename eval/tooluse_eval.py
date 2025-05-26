@@ -4,26 +4,20 @@ import json
 import logging
 import random
 
-import tqdm
+import tqdm.asyncio # for some reason this is where tqdm async mode is, honestly dont know why
+
 import dotenv
-import textdistance
-from deepeval import evaluate
-from deepeval.test_case import LLMTestCase
-from deepeval.test_case import ToolCall
-from deepeval.metrics   import ToolCorrectnessMetric
-from deepeval.metrics   import AnswerRelevancyMetric
 from typing import List
 
-import numpy as np
 import pandas as pd
-import openai
-from sklearn.metrics.pairwise import cosine_similarity
 from together import Together
 
-from langchain_core.messages import AIMessage
 from langgraph.graph.graph import CompiledGraph
 
 from agentic_sun_assistant.graph import create_and_compile_graph
+from utils import calc_tools_acc
+from utils import calc_tcs_levenstein
+from utils import recall_by_embedding_similarity
 
 dotenv.load_dotenv()
 
@@ -33,12 +27,18 @@ dotenv.load_dotenv()
 
 client      = Together()
 eval_graph  = create_and_compile_graph()
+tool_info_parsing_map = {
+    "Planner"      : (lambda x: str(x.get("full_text_plan", ""))),
+    "RAG"          : (lambda x: str(x.get("query",[]))),
+    "tavily_search": (lambda x: ','.join(x.get("queries", []))),
+    "get_time_now" : None
+}
 
 # TODO: change this to args parsed later
 # TODO: this is terrible, switch to functional programming
 DATASET_PATH      = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
-EVAL_DATA_PATH    = "eval_data.json"
 INFERED_DATA_PATH = "infered_data.json"
+REPORT_FILE_PATH  = "per_row_report.csv"
 
 with open(DATASET_PATH, 'r', encoding="utf-8") as eval_file:
     eval_dataset = json.load(eval_file)
@@ -92,12 +92,6 @@ def flatten_tool_calls_trace(
     return new_list
 
 def collect_tools_ins_tolist(tools_seq :list[list[dict]]):
-    tool_info_parsing_map = {
-        "Planner"      : (lambda x: str(x.get("full_text_plan", ""))),
-        "RAG"          : (lambda x: str(x.get("query",[]))),
-        "tavily_search": (lambda x: ','.join(x.get("queries", []))),
-        "get_time_now" : None
-    }
     res_dict = {} 
     default_parser = lambda x: RuntimeError("Unknown parser for this tool")
     for i_, call_round in enumerate(tools_seq):
@@ -205,82 +199,6 @@ test_cases   = []
 sum_norm_lvs = 0
 count_cases  = 0
 
-def _base_levenshtein(seq1, seq2):
-    n, m = len(seq1), len(seq2)
-    dp = np.zeros((n + 1, m + 1), dtype=int)
-
-    for i in range(n + 1):
-        dp[i][0] = i
-    for j in range(m + 1):
-        dp[0][j] = j
-
-    for i in range(1, n + 1):
-        for j in range(1, m + 1):
-            if seq1[i - 1] == seq2[j - 1]:
-                cost = 0  # Same base label
-            else:
-                cost = 1  # Different base labels
-            dp[i][j] = min(
-                dp[i - 1][j] + 1,      # Deletion
-                dp[i][j - 1] + 1,      # Insertion
-                dp[i - 1][j - 1] + cost  # Substitution
-            )
-
-    return dp[n][m]
-
-def _calc_levenstein(expected_tcs: List[str], actual_tcs:List[str]):
-    # flattened_tcs = [
-    #     item["name"]
-    #     for sublist in actual_tcs
-    #     for item in sorted(sublist, key=lambda x: x["name"])
-    # ]
-    return _base_levenshtein(expected_tcs, actual_tcs)
-
-def get_embedding(text: str, model="text-embedding-ada-002"):
-    response = client.embeddings.create(
-        model="BAAI/bge-large-en-v1.5",
-        input=text
-        )
-
-    return response.data[0].embedding
-
-def recall_by_embedding_similarity(list_predict, list_actual, threshold=0.85):
-
-    if not list_actual:
-        return 0.0  # Avoid division by zero
-
-    if list_actual == None or list_actual==[""]: list_actual = ["None"]
-    if list_predict == None or list_predict==[""]: list_predict = ["None"]
-
-    # Get embeddings
-    embeddings_pred = [get_embedding(pred) for pred in list_predict]
-    embeddings_actual = [get_embedding(act) for act in list_actual]
-
-    # Calculate true positives
-    true_positive = 0
-    for actual_emb in embeddings_actual:
-        max_sim = max(
-            cosine_similarity([actual_emb], [pred_emb])[0][0]
-            for pred_emb in embeddings_pred
-        )
-        if max_sim > threshold:
-            true_positive += 1
-
-    recall = true_positive / len(list_actual)
-    return recall
-
-def _calc_tools_acc(
-    tools_called  : list[str],
-    tools_expected: list[str]
-)->float:
-    TP = len(set(tools_called).intersection(set(tools_expected)))
-    FN = len(set(tools_expected).difference(set(tools_called)))
-    if TP+FN == 0:
-        recall = 1
-    else:
-        recall = float(TP/(TP+FN))
-    return recall
-
 def _eval_datapoint(datapoint):
 
     dp_id = datapoint["id_data"]["id"]
@@ -296,8 +214,8 @@ def _eval_datapoint(datapoint):
     args_llm      = datapoint["outputs"].get("tools_inputs", {})
     
     # tcs calcs
-    tool_acc            = _calc_tools_acc(tools_called, tools_expected)
-    tcs_levenstein_dist = _calc_levenstein(tcs_expected, tcs_called)
+    tool_acc            = calc_tools_acc(tools_called, tools_expected)
+    tcs_levenstein_dist = calc_tcs_levenstein(tcs_expected, tcs_called)
     
     # Inputs calcs
     tp_tools = list(set(tools_called).intersection(set(tools_expected)))
@@ -345,4 +263,4 @@ evaluation_result = eval_all(infered_dataset)
 #===== Save to report, we are currently using a CSV ===============================#
 #==================================================================================#
 
-evaluation_result.to_csv("per_row_report.csv")
+evaluation_result.to_csv(REPORT_FILE_PATH)

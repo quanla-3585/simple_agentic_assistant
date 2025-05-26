@@ -13,3 +13,54 @@ MAIN_CHUNKS = [
     "# Quy trình quản lý văn thư và lưu trữ trong Công ty TNHH Sun Asterisk theo tiêu chuẩn ISO/IEC 27001:2013 và ISO 9001:2015.\n## V. NỘI DUNG\n### 2. Tổng hợp quản lý giải quyết văn bản\n#### 2.1 Quản lý văn bản đến\n##### 2.1.2 Giải quyết công việc\n\nTất cả các văn thư gửi đến được xác nhận là công văn, sau khi được chuyển đến, nhân viên phụ trách ở các phòng/ban có trách nhiệm cập nhật các thông tin vào Sổ công văn đến (BM-2-320-02), gửi bản sao chép tới các phòng/ban liên quan khác đến quá trình giải quyết công việc trong công văn gửi đến.(nếu cần thiết)\n# Quy trình quản lý văn thư và lưu trữ trong Công ty TNHH Sun Asterisk theo tiêu chuẩn ISO/IEC 27001:2013 và ISO 9001:2015.\n## V. NỘI DUNG\n### 2. Tổng hợp quản lý giải quyết văn bản\n#### 2.1 Quản lý văn bản đến\n##### 2.1.3 Trình Ban lãnh đạo\n\nCác phòng/ban căn cứ vào chức năng, nhiệm vụ của mình để trình lên Ban Lãnh đạo Công ty cho ý kiến, giải quyết văn bản.\n# Quy trình quản lý văn thư và lưu trữ trong Công ty TNHH Sun Asterisk theo tiêu chuẩn ISO/IEC 27001:2013 và ISO 9001:2015.\n## V. NỘI DUNG\n### 2. Tổng hợp quản lý giải quyết văn bản\n#### 2.1 Quản lý văn bản đến\n##### 2.1.4 Lưu văn bản\n\nSau khi những công văn đã chuyển tới các phòng/ban liên quan, những cán bộ phụ trách được giao trách nhiệm xử lý văn bản đều phải lập hồ sơ công việc để giải quyết công văn và lưu hồ sơ. Tất cả công văn đến được sắp xếp, lưu trong file quản lý hồ sơ theo thứ tự thời gian.",
     "# Quy trình quản lý văn thư và lưu trữ trong Công ty TNHH Sun Asterisk theo tiêu chuẩn ISO/IEC 27001:2013 và ISO 9001:2015.\n## V. NỘI DUNG\n### 2. Tổng hợp quản lý giải quyết văn bản\n#### 2.2 Quản lý công văn đi\n\n[ - Trình tự quản lý, giải quyết công văn đi theo các bước được đề cập trong mục 1.1 và 1.2 của quy trình này.\n - Đối với tất cả các văn bản giấy tờ của Công ty gửi đi đến các cơ quan đơn vị bên ngoài, các phòng/ban phụ trách liên quan đều cập nhật theo số công văn tại link: https://sal.vn/XhoVIC ](https://sal.vn/XhoVIC)\n# Quy trình quản lý văn thư và lưu trữ trong Công ty TNHH Sun Asterisk theo tiêu chuẩn ISO/IEC 27001:2013 và ISO 9001:2015.\nQuy trình này quy định phương thức thực hiện công tác văn thư - lưu trữ trong Công ty nhằm đảm bảo việc cung cấp và giải quyết một cách kịp thời, đầy đủ, chính xác những thông tin cần thiết phục vụ nhiệm vụ quản lý của Công ty.\n# Quy trình quản lý văn thư và lưu trữ trong Công ty TNHH Sun Asterisk theo tiêu chuẩn ISO/IEC 27001:2013 và ISO 9001:2015.\n#### Danh sách biểu mẫu:\n\n**VI.**. **BIỂU MẪU**\n**STT**. **PL**. **Biểu mẫu **. **Mã số **. **Hình thức lưu **. **Thời gian lưu trữ**. **Bộ phận lưu trữ**\n**STT**. **PL**. **Biểu mẫu **. **Mã số **. **Bản cứng **. **Bản mềm **. **Thời gian lưu trữ**. **Bộ phận lưu trữ**\n1. **☑**. Sổ công văn đi. BM-2-320-01. ☑. 3 năm. Phòng Hành chính\n2. **☑**. Sổ công văn đến. BM-2-320-02. ☑. 3 năm. Phòng Hành chính"
 ]
+
+# Mock database for RAG
+MOCK_KNOWLEDGE_BASE = {
+    "Common": MAIN_CHUNKS,
+    "RND": {
+        "ai": [
+            "AI research at our company focuses on large language models and their applications in business contexts.",
+            "Our R&D team has developed several prototype AI systems for internal use, including document analysis and code generation.",
+            "The latest AI project involves developing a RAG system that can query our internal knowledge graph."
+        ],
+        "research": [
+            "Research methodologies employed by our team include A/B testing, user studies, and literature reviews.",
+            "Our research process typically involves hypothesis formation, experimentation, and peer review.",
+            "Recent research has focused on improving retrieval mechanisms for knowledge graphs."
+        ],
+        "development": [
+            "Development practices include agile methodologies, CI/CD pipelines, and code reviews.",
+            "Our development team uses Python, TypeScript, and Rust for most projects.",
+            "The development roadmap for Q3 includes implementing a new graph database system."
+        ]
+    },
+    "AIE": {
+        "engineering": [
+            "AI Engineering team is responsible for deploying and maintaining AI systems in production.",
+            "Our engineering stack includes Docker, Kubernetes, and various cloud services.",
+            "Engineering challenges include scaling inference for large language models."
+        ],
+        "deployment": [
+            "Deployment processes include rigorous testing, gradual rollout, and monitoring.",
+            "We deploy new models on a bi-weekly basis after thorough validation.",
+            "Deployment metrics include latency, throughput, and error rates."
+        ]
+    },
+    "IFU": {
+        "infrastructure": [
+            "Infrastructure team manages our cloud resources, on-premise servers, and networking.",
+            "Our infrastructure is primarily based on AWS with some services on Azure.",
+            "Infrastructure costs are monitored and optimized on a monthly basis."
+        ],
+        "security": [
+            "Security protocols include regular audits, penetration testing, and access control reviews.",
+            "All data is encrypted both in transit and at rest using industry-standard protocols.",
+            "Security training is mandatory for all employees on a quarterly basis."
+        ]
+    },
+    "HR": {
+        "compensation and benefits": [
+            "Pay day is at 30th every month."
+        ]
+    }
+}
