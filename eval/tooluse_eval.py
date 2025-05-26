@@ -1,6 +1,8 @@
+"Quick script for evaluating agent's tool use"
 import asyncio
 import json
 import logging
+import random
 
 import tqdm
 import dotenv
@@ -10,99 +12,184 @@ from deepeval.test_case import LLMTestCase
 from deepeval.test_case import ToolCall
 from deepeval.metrics   import ToolCorrectnessMetric
 from deepeval.metrics   import AnswerRelevancyMetric
-from deepeval.evaluate  import DisplayConfig
 from typing import List
 
 import numpy as np
 import pandas as pd
+import openai
+from sklearn.metrics.pairwise import cosine_similarity
+from together import Together
 
 from langchain_core.messages import AIMessage
 from langgraph.graph.graph import CompiledGraph
 
 from agentic_sun_assistant.graph import create_and_compile_graph
 
-# Set up envs
 dotenv.load_dotenv()
-eval_graph   = create_and_compile_graph()
 
-# TODO: Add args parsing
+
+client      = Together()
+eval_graph  = create_and_compile_graph()
+
 # TODO: change this to args parsed later
-DATASET_PATH = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
-eval_dataset = json.load(open(DATASET_PATH, 'r'))[:10]
 # TODO: this is terrible, switch to functional programming
+DATASET_PATH   = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
+EVAL_DATA_PATH = "eval_data.json"
 
+with open(DATASET_PATH, 'r', encoding="utf-8") as eval_file:
+    eval_dataset = json.load(eval_file)[:3]
 
-
-# STEP 1  : Run Inference for Inputs [DONE]
-# STEP 2  : Collect Infered Data, Merge with Input [DONE]
-
-# STEP 3  : Run Evaluation on data
-# STEP 3.1: Tool Accuracy [Doing]
-# STEP 3.2: TCS Levenstein [Done]
-# STEP 3.3: Tool Input Correctness [Done]
-# STEP 3.4: Reasoning Trace Eval (TBD)
-
-# STEP 4  : Export Report
-
-
-# STEP 1: Run Inference for Inputs
-async def arun_datapoint(input:str, eval_graph: CompiledGraph):
+async def ainfer_datapoint(input:str, eval_graph: CompiledGraph):
     """Run 1 eval datapoint and handle exceptions"""
 
+    id_      = list(input.keys())[0]
+    input_   = input[id_]
+    aux_data = {"id": id_,"question": input_,}
     try:
         result = await eval_graph.ainvoke(
             {
-                "messages":[{"type":"user", "content":input}]
+                "messages":[{"type":"user", "content":input_}]
             }
         )
-        print(result["tool_calls_agg"])
-        return result
+        return result, aux_data
     except Exception as e:
-        print(f"Failed processing input {input}, raised exception {e}")
-        return {
-            "messages":[]
-        }
+        print(f"Failed processing input {input_}, raised exception {e}")
+        res = {"messages":[]}
+        res.update(aux_data)
+        return res, aux_data
 
-
-async def arun_dataset(
-        eval_dataset: dict, eval_graph:CompiledGraph, eval_data_path: str = 'eval_data.json'
+async def ainfer_dataset(
+        input_dataset: list[dict], eval_graph:CompiledGraph, 
+        id_col_name:str = "QID",  init_question_col_name="Question"
     ) -> dict:
-    """async run evaluation on all of the cases"""
+    """async run evaluation on all of the cases"""  
 
-    user_inputs  = [_["Question"] for _ in eval_dataset]
-    eval_results = [{} for _ in user_inputs]
-    
+    # Extract user ins
+    user_inputs  = [{_[id_col_name]:_[init_question_col_name]} for _ in input_dataset]
+    # Run the inference
     run_results = await tqdm.asyncio.tqdm.gather(
-        *[arun_datapoint(ui_, eval_graph) for ui_ in user_inputs]
+        *[ainfer_datapoint(ui_, eval_graph) for ui_ in user_inputs]
     )
-    
-    for i in range(len(user_inputs)):
-        eval_results[i]["id"] = eval_dataset[i]["QID"]
-        eval_results[i]["user_input"]   = user_inputs[i]
-        
-        ideal_tools  = eval_dataset[i]["Tools_Accuracy"]["Expected_Tools"]
-        if ideal_tools == None:
-            ideal_tools = []
-        eval_results[i]["expected_tools"] = {}
-        for tool_name in ideal_tools:
-            if 'get_time_now' in tool_name: continue
-            eval_results[i]["expected_tools"][tool_name] = eval_dataset[i]["Tool_Inputs"][tool_name]["Expected_Inputs"]
-        
-        if eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"] == None:
-            eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"] = []
-        eval_results[i]["expected_tcs"] = eval_dataset[i]["Tool_Call_Sequence_(TCS)"]["Expected_TCS"]
-        eval_results[i]["actual_tcs"]   = getattr(run_results[i], "tool_calls_agg", [])
 
-        # eval_results[i]["actual_tcs"]   = getattr(run_results[i], "tool_calls_agg", [])
-    
-    with open(eval_data_path, 'w') as file:
-        json.dump(eval_results, file, indent=2)
-    
-    logging.info
+    return run_results
 
-# EVAL_DATA_PATH = "eval/data/tool-calling/TC-R_Eval_cleaned_merged.json"
-EVAL_DATA_PATH = "eval_data.json"
-asyncio.run(arun_dataset(eval_dataset, eval_graph, EVAL_DATA_PATH))
+def flatten_tool_calls_trace(
+    tools_seq :list[list[dict]]
+):
+    new_list = []
+    for i, call_round in enumerate(tools_seq):
+        tools_in_round = sorted([_["name"] for _ in call_round])
+        new_list+=tools_in_round
+    
+    return new_list
+
+def collect_tools_ins_tolist(tools_seq :list[list[dict]]):
+    tool_info_parsing_map = {
+        "Planner"      : (lambda x: str(x.get("full_text_plan", ""))),
+        "RAG"          : (lambda x: str(x.get("query",[]))),
+        "tavily_search": (lambda x: ','.join(x.get("queries", []))),
+        "get_time_now" : None
+    }
+    res_dict = {} 
+    default_parser = lambda x: RuntimeError("Unknown parser for this tool")
+    for i_, call_round in enumerate(tools_seq):
+        for tool_ in call_round:
+            if tool_["name"] in tool_info_parsing_map.keys():
+
+                tool_name       = tool_.get("name", "")
+                tool_arg_parser = tool_info_parsing_map.get(tool_name, default_parser)
+                if tool_arg_parser==None: 
+                    continue
+
+                tool_args_dict  = tool_.get("args", {})
+                parsed_args     = tool_arg_parser(tool_args_dict)
+
+                if tool_name not in res_dict.keys():
+                    res_dict[tool_name] = [parsed_args]
+                else:  
+                    res_dict[tool_["name"]].append(parsed_args)
+
+    return res_dict
+
+def get_inputs_dict(dataset, q_):
+    for dp_ in dataset:
+        if dp_["Question"]==q_:
+            return dp_
+    return {}
+
+async def inference_pipeline(
+    dataset: list[dict],
+    graph: CompiledGraph,
+    inference_results_save_path: str
+    ) -> None:
+    """This is the main function for running eval pipeline, this results in a file being saved
+    Inputs:
+        - eval_graph: the graph with ainvoke() usable for inference
+        - eval_data_save_path: absolute path
+    """
+    # Run inference
+    inference_results = await ainfer_dataset(dataset, graph)
+    res = []
+    
+    # Extract results, parse it into desired formatting
+    for i_, output_ in enumerate(inference_results):
+        new_result = {}
+        id_data = output_[1]
+        result  = output_[0]
+        
+        tool_sequence    = result.get("tool_calls_agg", [])
+        reasoning_traces = result.get("reasoning_traces", ["No reasoning traces collected"])
+        final_answer     = result.get("final_answer", "No answer collected.")
+        
+        # formatting to full texts
+        reasoning_traces_str  = '\n'.join(reasoning_traces)
+        tool_sequence_strlist = flatten_tool_calls_trace(tool_sequence)
+        tools_input_agg_dict  = collect_tools_ins_tolist(tool_sequence)
+        
+        # Outputs setting
+        output_agg = {} 
+        output_agg["final_answer"]        = final_answer       
+        output_agg["reasoning_texts_agg"] = reasoning_traces_str
+        output_agg["tcs"]                 = tool_sequence_strlist
+        output_agg["tools_called"]        = list(set(tool_sequence_strlist))
+        output_agg["tools_inputs"]        = tools_input_agg_dict
+        for tn_, inp_ in enumerate(output_agg["tools_inputs"]):
+            if tn_=="RAG": output_agg["tools_inputs"]["RAG"]=','.join(inp_)
+        
+        new_result["output"] = output_agg
+        
+        # ID data
+        input_dict = get_inputs_dict(dataset, id_data.get("question", ""))        
+        id_agg     = {}
+        id_agg["id"]                = input_dict.get("QID", random.randint(0, 100000))
+        id_agg["question"]          = input_dict.get("Question")
+        
+        # Get ground-truths for merging to a single datapoint
+        input_agg  = {}
+        input_agg["reasoning_rubrics"] = input_dict.get("Reasoning", {}).get("Expected_Reasoning", "Failed getting reasoning.")
+        input_agg["tcs"]               = input_dict.get("Tool_Call_Sequence_(TCS)", {}).get("Expected_TCS", ["Failed getting TCS"])
+        input_agg["tools_names"]       = list(input_dict.get("Tool_Inputs").keys())
+
+        input_agg["tools_inputs"] = {}
+        for tool_name in input_agg["tools_names"]:
+            expected_inputs = input_dict.get("Tool_Inputs", {}).get(tool_name, {}).get("Expected_Inputs", None)
+            if expected_inputs == None:
+                continue
+            else: 
+                input_agg["tools_inputs"][tool_name] = expected_inputs
+        
+        infered_datapoint = {"id_data": id_agg, "outputs":output_agg, "inputs": input_agg}
+        res.append(infered_datapoint)
+    
+    with open(inference_results_save_path, 'w') as file:
+        json.dump(res, file, indent=2)
+
+asyncio.run(inference_pipeline(eval_dataset, eval_graph, "infered_data.json"))
+
+#==================================================================================#
+#===== This concludes the inference process, we must then assess this results =====#
+#==================================================================================#
+
 
 # STEP 3  : Run Evaluation on data
 test_cases   = []

@@ -80,6 +80,11 @@ async def main_agent(state:MainAgentState, config: Configuration):
     
     # Incase there are failures
     llm_response = messages
+
+    # Always planning first step
+    if len(messages)==1:
+        tool_choice="Planner"
+
     llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
                 [
                     {

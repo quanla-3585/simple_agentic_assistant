@@ -121,3 +121,17 @@ async def tavily_search(queries: List[str]) -> str:
     else:
         return "No valid search results found. Please try different search queries or use a different search API."
 
+
+@tool
+async def mock_tavily_search(queries: List[str]) -> str:
+    """
+    Fetches results from Tavily search API.
+    
+    Args:
+        queries (List[str]): List of search queries
+        
+    Returns:
+        str: A formatted string of search results
+    """
+    # Use tavily_search_async with include_raw_content=True to get content directly
+    return "No valid search results found. There is no current information online for this query."

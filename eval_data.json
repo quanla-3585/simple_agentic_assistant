@@ -120,5 +120,134 @@
       "tavily_search"
     ],
     "actual_tcs": []
+  },
+  {
+    "id": 12,
+    "user_input": "L\u00ean k\u1ebf ho\u1ea1ch cho du l\u1ecbch h\u00e8 \u1edf Quy Nh\u01a1n cho nh\u00f3m 30 ng\u01b0\u1eddi, trong kho\u1ea3ng ng\u00e2n s\u00e1ch 8tr/1 ng\u01b0\u1eddi",
+    "expected_tools": {
+      "Planner": "(Plan l\u00ean k\u1ebf ho\u1ea1ch du l\u1ecbch h\u00e8 cho 30 ng\u01b0\u1eddi)",
+      "tavily_search": "(\u0110\u1ecba \u0111i\u1ec3m du l\u1ecbch Quy Nh\u01a1n)\n(Ch\u00ed ph\u00ed du l\u1ecbch Quy Nh\u01a1n)"
+    },
+    "expected_tcs": [
+      "Planner",
+      "tavily_search",
+      "tavily_search"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 13,
+    "user_input": "Th\u1eddi ti\u1ebft \u1edf Ninh B\u00ecnh v\u00e0 d\u1ef1 \u0111o\u00e1n nhu c\u1ea7u du l\u1ecbch \u1edf \u0111\u00f3 trong th\u00e1ng 8?",
+    "expected_tools": {
+      "Planner": "(Plan t\u00ecm th\u1eddi ti\u1ebft Ninh B\u00ecnh trong th\u00e1ng 8)\n(Plan t\u00ecm nhu c\u1ea7u du l\u1ecbch Ninh B\u00ecnh trong th\u00e1ng 8)",
+      "tavily_search": "(Th\u1eddi ti\u1ebft Ninh B\u00ecnh)\n(Th\u1ed1ng k\u00ea l\u01b0\u1ee3t kh\u00e1ch du l\u1ecbch Ninh B\u00ecnh)"
+    },
+    "expected_tcs": [
+      "Planner",
+      "tavily_search",
+      "Planner",
+      "tavily_search"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 14,
+    "user_input": "L\u1eadp k\u1ebf ho\u1ea1ch onboard th\u1ef1c t\u1eadp sinh v\u1edbi m\u1ee5c ti\u00eau gi\u00fap c\u00e1c nh\u00e2n l\u1ef1c m\u1edbi l\u00e0m quen v\u1edbi quy tr\u00ecnh, v\u0103n h\u00f3a v\u00e0 l\u1ecbch s\u1eed c\u1ee7a c\u00f4ng ty,",
+    "expected_tools": {
+      "Planner": "(Plan onboard cho th\u1ef1c t\u1eadp sinh)\n(Plan gi\u00fap nh\u00e2n l\u1ef1c l\u00e0m quen qu\u1ef3 tr\u00ecnh v\u0103n h\u00f3a lsu c\u00f4ng ty)",
+      "RAG": "\"Quy tr\u00ecnh c\u00f4ng ty\"\n\"V\u0103n h\u00f3a c\u00f4ng ty\"\n\"L\u1ecbch s\u1eed c\u00f4ng ty\"",
+      "tavily_search": "(Ho\u1ea1t \u0111\u1ed9ng onboard cho th\u1ef1c t\u1eadp sinh)"
+    },
+    "expected_tcs": [
+      "Planner",
+      "tavily_search",
+      "planner",
+      "RAG",
+      "RAG",
+      "RAG"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 15,
+    "user_input": "Ch\u00ednh s\u00e1ch ngh\u1ec9 thai s\u1ea3n cho nam gi\u1edbi c\u1ee7a c\u00f4ng ty?",
+    "expected_tools": {
+      "RAG": "\"Ch\u00ednh s\u00e1ch thai s\u1ea3n cho nam gi\u1edbi\""
+    },
+    "expected_tcs": [
+      "RAG"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 16,
+    "user_input": "T\u00f3m t\u1eaft v\u1ec1 quy tr\u00ecnh duy\u1ec7t v\u00e0 l\u01b0u tr\u1eef cho v\u0103n b\u1ea3n \u0111i trong n\u1ed9i quy c\u1ee7a c\u00f4ng ty. \u0110\u1ed1i chi\u1ebfu quy tr\u00ecnh n\u00e0y v\u1edbi chu\u1ea9n ISO m\u1edbi nh\u1ea5t \u0111\u1ec3 t\u00ecm ra \u0111i\u1ec3m l\u1ed7i th\u1eddi c\u1ee7a quy tr\u00ecnh c\u00f4ng ty. T\u1eadp trung v\u00e0o v\u0103n b\u1ea3n k\u1ef9 thu\u1eadt s\u1ed1 c\u00f3 t\u00ednh b\u1ea3o m\u1eadt cao. L\u00ean k\u1ebf ho\u1ea1ch ph\u1ed5 bi\u1ebfn v\u00e0 \u00e1p d\u1ee5ng ti\u00eau chu\u1ea9n m\u1edbi nh\u1ea5t n\u1ebfu c\u1ea7n.",
+    "expected_tools": {
+      "RAG": "\"ti\u00eau chu\u1ea9n ISO v\u1ec1 l\u01b0u tr\u1eef b\u1ea3o m\u1eadt v\u0103n b\u1ea3n \u0111i\"",
+      "tavily_search": "(Ti\u00eau chu\u1ea9n ISO v\u1ec1 l\u01b0u tr\u1eef b\u1ea3o m\u1eadt v\u0103n b\u1ea3n \u0111i m\u1edbi nh\u1ea5t)",
+      "Planner": "(K\u1ebf ho\u1ea1ch ph\u1ed5 bi\u1ebfn v\u00e0 \u00e1p d\u1ee5ng chu\u1ea9n ISO m\u1edbi)"
+    },
+    "expected_tcs": [
+      "RAG",
+      "tavily_search",
+      "tavily_search",
+      "Planner"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 17,
+    "user_input": "T\u00f4i b\u1ecb m\u1ea5t quy\u1ec1n truy c\u1eadp v\u00e0o email c\u00f4ng ty, t\u00f4i n\u00ean li\u00ean h\u1ec7 ai v\u00e0 l\u00e0m g\u00ec \u0111\u1ec3 kh\u00f4i ph\u1ee5c?",
+    "expected_tools": {
+      "RAG": "\"quy tr\u00ecnh c\u1ea5p ph\u00e1t v\u00e0 \u0111\u1ed5i m\u1edbi t\u00e0i kho\u1ea3n nh\u00e2n vi\u00ean\"",
+      "tavily_search": "(Nh\u00e2n vi\u00ean ph\u00f2ng IT Sun Asterisk)"
+    },
+    "expected_tcs": [
+      "RAG",
+      "tavily_search"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 18,
+    "user_input": "H\u00e3y \u0111\u1ed1i chi\u1ebfu quy tr\u00ecnh onboarding hi\u1ec7n t\u1ea1i c\u1ee7a c\u00f4ng ty v\u1edbi c\u00e1c best practice to\u00e0n c\u1ea7u, ch\u1ec9 ra \u0111i\u1ec3m thi\u1ebfu s\u00f3t, v\u00e0 \u0111\u01b0a ra k\u1ebf ho\u1ea1ch s\u1eeda \u0111\u1ed5i, bao g\u1ed3m \u0111\u00e0o t\u1ea1o cho c\u00e1c b\u1ed9 ph\u1eadn li\u00ean quan.",
+    "expected_tools": {
+      "RAG": "\"quy tr\u00ecnh onboarding\"",
+      "tavily_search": "(Quy tr\u00ecnh onboarding theo ti\u00eau chu\u1ea9n qu\u1ed1c t\u1ebf)",
+      "Planner": "(K\u1ebf ho\u1ea1ch onboarding cho nh\u00e2n vi\u00ean m\u1edbi)"
+    },
+    "expected_tcs": [
+      "RAG",
+      "tavily_search",
+      "Planner"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 19,
+    "user_input": "T\u00f4i c\u1ea7n bi\u1ebft th\u1eddi gian x\u1eed l\u00fd trung b\u00ecnh c\u1ee7a ph\u00f2ng ph\u00e1p ch\u1ebf v\u1edbi y\u00eau c\u1ea7u r\u00e0 so\u00e1t h\u1ee3p \u0111\u1ed3ng n\u1ed9i b\u1ed9. N\u1ebfu kh\u00f4ng c\u00f3 s\u1ed1 li\u1ec7u c\u1ee5 th\u1ec3 trong t\u00e0i li\u1ec7u, h\u00e3y tra c\u1ee9u quy chu\u1ea9n ng\u00e0nh v\u00e0 \u0111\u1ec1 xu\u1ea5t KPI n\u1ed9i b\u1ed9.",
+    "expected_tools": {
+      "RAG": "\"th\u1eddi gian x\u1eed l\u00fd y\u00eau c\u1ea7u r\u00e0 so\u00e1t h\u1ee3p \u0111\u1ed3ng c\u1ee7a ph\u00f2ng ph\u00e1p ch\u1ebf\"",
+      "tavily_search": "(Quy tr\u00ecnh ti\u00eau chu\u1ea9n x\u1eed l\u00fd r\u00e0 so\u00e1t h\u1ee3p \u0111\u1ed3ng n\u1ed9i b\u1ed9)",
+      "Planner": "(K\u1ebf ho\u1ea1ch kh\u1ea3o s\u00e1t-\u0111\u1ec1 xu\u1ea5t, th\u1eed nghi\u1ec7m v\u00e0 \u1ee9ng d\u1ee5ng ti\u00eau chu\u1ea9n m\u1edbi)"
+    },
+    "expected_tcs": [
+      "RAG",
+      "RAG",
+      "tavily_search",
+      "Planner"
+    ],
+    "actual_tcs": []
+  },
+  {
+    "id": 20,
+    "user_input": "Employee Handbook c\u1ee7a Sun Asterisk \u0111\u01b0\u1ee3c l\u01b0u tr\u1eef \u1edf \u0111\u00e2u?",
+    "expected_tools": {
+      "RAG": "\"Employee Handbook\""
+    },
+    "expected_tcs": [
+      "RAG"
+    ],
+    "actual_tcs": []
   }
 ]
