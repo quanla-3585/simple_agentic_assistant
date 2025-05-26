@@ -28,7 +28,7 @@ dotenv.load_dotenv()
 client      = Together()
 eval_graph  = create_and_compile_graph()
 tool_info_parsing_map = {
-    "Planner"      : (lambda x: str(x.get("full_text_plan", ""))),
+    # "Planner"      : (lambda x: str(x.get("full_text_plan", ""))),
     "RAG"          : (lambda x: str(x.get("query",[]))),
     "tavily_search": (lambda x: ','.join(x.get("queries", []))),
     "get_time_now" : None

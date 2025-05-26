@@ -14,7 +14,7 @@ from langgraph.graph import START, END, StateGraph
 from agentic_sun_assistant.configuration import Configuration
 from agentic_sun_assistant.utils import *
 from agentic_sun_assistant.prompts import *
-from agentic_sun_assistant.state import MainAgentState
+from agentic_sun_assistant.state import MainAgentState, InitialPlan
 from agentic_sun_assistant.tools import *
 from agentic_sun_assistant.rag_db import MOCK_KNOWLEDGE_BASE
 
@@ -49,18 +49,12 @@ def _parse_message(message: BaseMessage) -> dict:
         logging.warning(f"Unknown message instance passed for parsing {message.type}")
 
     return results
-        
-async def main_agent(state:MainAgentState, config: Configuration):
-    
-    """Agent to make more questions"""
+
+async def tools_executor_agent(state: MainAgentState, config: Configuration):
+    """Agent forced to do tool calling"""
     
     # Get all tools
     available_tools, _ = get_main_agent_tools(config)
-
-    # DEPRECATED: Get configuration, Initialize the model
-#     configurable = Configuration.from_runnable_config(config)
-#     main_agent_model = get_config_value(configurable.main_agent_model)
-#     llm = init_chat_model(model=main_agent_model, temperature=0.2)
 
     # Load sensitive config from environment variables
     api_key = os.environ.get("AZURE_OPENAI_API_KEY")
@@ -84,11 +78,14 @@ async def main_agent(state:MainAgentState, config: Configuration):
     if len(messages)==1:
         tool_choice="Planner"
 
-    llm_response = await llm.bind_tools(available_tools, tool_choice="auto").ainvoke(
+    llm_response = await llm.bind_tools(available_tools, tool_choice="any", parallel_tool_calls=True).ainvoke(
                 [
                     {
                         "role": "system",
-                        "content": QUESTION_SYNTHESIZING_INSTRUCTION
+                        "content": """
+                        Based on the provided input from the converstation history.
+                        Generate a set of tool calls that satisfy the questions planned to ask.
+                        """
                     }
                 ]
                 + messages
@@ -99,6 +96,7 @@ async def main_agent(state:MainAgentState, config: Configuration):
         state.update({"reasoning_traces": []})
         state.update({"tool_calls_agg"  : []})
         state.update({"final_answer"    : ""})
+        state.update({"user_questions"  : []})
     else:
         # for i_ in range(state["len_msgs_last_loop"], len(llm_response)+len(messages)):
         llm_response_parsing = _parse_message(llm_response)
@@ -117,6 +115,57 @@ async def main_agent(state:MainAgentState, config: Configuration):
     #update some states
     state.update({"messages":llm_response})
 
+    return state
+
+async def traces_parser(state: MainAgentState, config: Configuration):
+    """For logging"""
+    
+    messages = state["messages"]
+
+    for message in messages:
+        # for i_ in range(state["len_msgs_last_loop"], len(llm_response)+len(messages)):
+        llm_response_parsing = _parse_message(message)
+        try:
+            for key_ in llm_response_parsing.keys():
+                if key_ == "messages": continue
+                if isinstance(state[key_], List): 
+                    state.update({key_: state[key_]+llm_response_parsing[key_]})
+                else: state.update({key_: llm_response_parsing[key_]})
+        except Exception as e:
+            logging.warning(f"STATE UPDATE FAILED with parsed info {llm_response_parsing}, threw exception: {e}")
+    # #update some states
+    #     state.update({"messages":llm_response})
+
+    return state
+
+async def answer_generator(state: MainAgentState, config: Configuration):
+    # Load sensitive config from environment variables
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
+    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
+
+    model = AzureChatOpenAI(
+        azure_endpoint="https://sun-ai.openai.azure.com/",
+        deployment_name=deployment_name,
+        api_version=api_version,
+        api_key=api_key
+    )
+
+    # Get current messages stack. This is simple message caching
+    messages      = state["messages"]
+
+    # assert isinstance(human_message, HumanMessage), "Handling AI message is currently unavailable"
+    response  = await model.ainvoke(
+        [
+            {
+                "role": "system",
+                "content": ANSWERER_PROMPT
+            }
+        ]
+        + messages
+    )
+    state.update({"final_answer":response.content})
+    
     return state
 
 def invoke_pseudo_rag(args):
@@ -166,12 +215,12 @@ def get_search_tool(config: RunnableConfig):
 def get_main_agent_tools(config:Configuration):
     """Get main agent's tools based on configuration"""
     websearch_tool = get_search_tool(config)
-    tool_list = [Planner, get_time_now, RAG, websearch_tool]
+    tool_list = [get_time_now, RAG, websearch_tool]
     return tool_list, {tool.name: tool for tool in tool_list}
 
 async def main_agent_tools(
         state: MainAgentState, config: Configuration
-    ) -> Command[Literal["main_agent", "__end__"]]:
+    ) -> Command[Literal["answer_generator"]]:
     
     result = []
     _, main_agent_tools_by_name = get_main_agent_tools(config)
@@ -199,53 +248,73 @@ async def main_agent_tools(
                        "tool_call_id": tool_call["id"]})
     
     # last message no tools
-    return Command(goto="main_agent", update={"messages": result})
+    return Command(goto="answer_generator", update={"messages": result})
 
-# async def question_agent_should_continue(state: MainAgentState) -> Literal["main_agent_tools", "simple_qa_agent", END]:
-async def question_agent_should_continue(state: MainAgentState) -> Literal["main_agent_tools", "main_agent",  END]:
-    """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
+async def initial_planning(state: MainAgentState, config: Configuration):
 
-    messages = state["messages"]
-    if len(messages)==0:
-        return END
+    # Load sensitive config from environment variables
+    api_key = os.environ.get("AZURE_OPENAI_API_KEY")
+    api_version = os.environ.get("AZURE_OPENAI_API_VERSION")
+    deployment_name = os.environ.get("AZURE_OPENAI_DEPLOYMENT_NAME")
 
-    last_message = messages[-1]
-    if isinstance(last_message, HumanMessage):
-        return "main_agent"
+    model = AzureChatOpenAI(
+        azure_endpoint="https://sun-ai.openai.azure.com/",
+        deployment_name=deployment_name,
+        api_version=api_version,
+        api_key=api_key
+    )
 
-    # If the LLM makes a tool call, then perform an actio
-    if last_message.tool_calls:
-        return "main_agent_tools"
-    # Crude logic to force toolcall
-    elif "[REASONING]" in last_message.text() and "[ANSWER]" not in last_message.text():
-        return "main_agent"
-    else: # This should truncate the ReAct loop
-        return END
+    # Get current messages stack. This is simple message caching
+    messages      = state["messages"]
+    human_message = messages[-1]
+    # assert isinstance(human_message, HumanMessage), "Handling AI message is currently unavailable"
+
+    model_with_structure = model.with_structured_output(InitialPlan)
+    structured_response  = await model_with_structure.ainvoke(
+        [
+            {
+                "role": "system",
+                "content": PLANNER_PROMPT
+            }
+        ]
+        + [human_message]
+    )
+    state.update({"initial_plan":structured_response})
+    
+    return state
 
 def create_and_compile_graph():
     # Build the graph
     main_agent_builder = StateGraph(MainAgentState, config_schema=Configuration)
-    main_agent_builder.add_node("main_agent", main_agent)
+    main_agent_builder.add_node("tools_executor_agent", tools_executor_agent)
     main_agent_builder.add_node("main_agent_tools", main_agent_tools)
+    main_agent_builder.add_node("initial_planning", initial_planning)
+    main_agent_builder.add_node("answer_generator", answer_generator)
+    main_agent_builder.add_node("traces_parser", traces_parser)
 
-    main_agent_builder.add_edge(START, "main_agent")
-    main_agent_builder.add_conditional_edges(
-        "main_agent",
-        question_agent_should_continue,
-        {
-            # Name returned by should_continue : Name of next node to visit
-            "main_agent_tools": "main_agent_tools",
-            "main_agent": "main_agent",
-            END: END,
-        },
-    )
-    main_agent_builder.add_edge("main_agent_tools", "main_agent")
-    main_agent_builder.add_edge("main_agent_tools", END)
+    main_agent_builder.add_edge(START, "initial_planning")
+    main_agent_builder.add_edge("initial_planning", "tools_executor_agent")
+    main_agent_builder.add_edge("tools_executor_agent", "main_agent_tools")
+    main_agent_builder.add_edge("main_agent_tools", "answer_generator")
+    main_agent_builder.add_edge("answer_generator", "traces_parser")
+    main_agent_builder.add_edge("traces_parser", END)
+    
+    compiled_graph = main_agent_builder.compile()
+    # compiled_graph.invoke()
 
-    # Compile the graph
-    graph = main_agent_builder.compile()
-    logging.info("main_agent_builder Graph Compiled Successfully !")
-
-    return graph
+    return compiled_graph
 
 graph = create_and_compile_graph()
+
+
+    # main_agent_builder.add_conditional_edges(
+    #     "main_agent",
+    #     question_agent_should_continue,
+    #     {
+    #         # Name returned by should_continue : Name of next node to visit
+    #         "main_agent_tools": "main_agent_tools",
+    #         "main_agent": "main_agent",
+    #         END: END,
+    #     },
+    # )
+    # main_agent_builder.add_edge("main_agent_tools", "main_agent")

@@ -1,13 +1,31 @@
-from typing import Optional, List, Annotated
+from typing import Optional
+from typing import List
+from typing import Annotated
+from typing_extensions import TypedDict
+from enum import Enum
 
 from langgraph.graph import MessagesState
 from langchain_core.messages.tool import ToolCall
 
 def _combine_list(list1, list2):
     return list1 + list2
-def _replace(a, b):
-    return b
 
+class QuestionType(Enum):
+    """Either RAG (info within Sun*'s documents) or tavily_search"""
+    WEB_EXTERNAL = "web_external"
+    SUN_INTERNAL = "sun_internal"
+    MISC_INFO    = "miscelancenous_informations"
+
+class Question(TypedDict):
+    """One question that must be retrieved from outside of LLM"""
+    question_type: QuestionType
+    question     : str
+    sub_questions: Optional[list] = None
+
+class InitialPlan(TypedDict):
+    """An ordered list of questions that must be asked"""
+    plan_full_text: str
+    questions     : List[Question]
 
 class MainAgentState(MessagesState):
     """Provides main agent state
@@ -19,6 +37,7 @@ class MainAgentState(MessagesState):
     """
 
     user_questions    : List[str]
+    initial_plan      : InitialPlan
     reasoning_traces  : List[str] = []
     tool_calls_agg    : Annotated[List[ToolCall], _combine_list]
     final_answer      : str = ""
