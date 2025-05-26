@@ -33,11 +33,12 @@ eval_graph  = create_and_compile_graph()
 
 # TODO: change this to args parsed later
 # TODO: this is terrible, switch to functional programming
-DATASET_PATH   = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
-EVAL_DATA_PATH = "eval_data.json"
+DATASET_PATH      = "eval/data/tool-calling/TC-R_Eval_cleaned.json"
+EVAL_DATA_PATH    = "eval_data.json"
+INFERED_DATA_PATH = "infered_data.json"
 
 with open(DATASET_PATH, 'r', encoding="utf-8") as eval_file:
-    eval_dataset = json.load(eval_file)[:3]
+    eval_dataset = json.load(eval_file)
 
 async def ainfer_datapoint(input:str, eval_graph: CompiledGraph):
     """Run 1 eval datapoint and handle exceptions"""
@@ -154,7 +155,9 @@ async def inference_pipeline(
         output_agg["tools_called"]        = list(set(tool_sequence_strlist))
         output_agg["tools_inputs"]        = tools_input_agg_dict
         for tn_, inp_ in enumerate(output_agg["tools_inputs"]):
-            if tn_=="RAG": output_agg["tools_inputs"]["RAG"]=','.join(inp_)
+            if tn_=="RAG":
+                logging.warning(f"Found multiple RAG calls with concat input {tn_, inp_}")
+                output_agg["tools_inputs"]["RAG"]=','.join(inp_)
         
         new_result["output"] = output_agg
         
@@ -167,8 +170,9 @@ async def inference_pipeline(
         # Get ground-truths for merging to a single datapoint
         input_agg  = {}
         input_agg["reasoning_rubrics"] = input_dict.get("Reasoning", {}).get("Expected_Reasoning", "Failed getting reasoning.")
-        input_agg["tcs"]               = input_dict.get("Tool_Call_Sequence_(TCS)", {}).get("Expected_TCS", ["Failed getting TCS"])
-        input_agg["tools_names"]       = list(input_dict.get("Tool_Inputs").keys())
+        input_agg["tcs"]               = input_dict.get("Tool_Call_Sequence_(TCS)", {}).get("Expected_TCS", [])
+        if input_agg["tcs"] == None: input_agg["tcs"] = []
+        input_agg["tools_names"]       = list(set(input_agg["tcs"]))
 
         input_agg["tools_inputs"] = {}
         for tool_name in input_agg["tools_names"]:
@@ -184,7 +188,7 @@ async def inference_pipeline(
     with open(inference_results_save_path, 'w') as file:
         json.dump(res, file, indent=2)
 
-asyncio.run(inference_pipeline(eval_dataset, eval_graph, "infered_data.json"))
+# asyncio.run(inference_pipeline(eval_dataset, eval_graph, "infered_data.json"))
 
 #==================================================================================#
 #===== This concludes the inference process, we must then assess this results =====#
@@ -219,23 +223,13 @@ def _base_levenshtein(seq1, seq2):
 
     return dp[n][m]
 
-def _calc_levenstein(expected_tcs: List[str], actual_tcs:List[List[dict]]):
-    flattened_tcs = [
-        item["name"]
-        for sublist in actual_tcs
-        for item in sorted(sublist, key=lambda x: x["name"])
-    ]
-    return _base_levenshtein(expected_tcs, flattened_tcs)
-
-import openai
-import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
-
-
-# Set your OpenAI API key
-from together import Together
-
-client = Together()
+def _calc_levenstein(expected_tcs: List[str], actual_tcs:List[str]):
+    # flattened_tcs = [
+    #     item["name"]
+    #     for sublist in actual_tcs
+    #     for item in sorted(sublist, key=lambda x: x["name"])
+    # ]
+    return _base_levenshtein(expected_tcs, actual_tcs)
 
 def get_embedding(text: str, model="text-embedding-ada-002"):
     response = client.embeddings.create(
@@ -246,8 +240,12 @@ def get_embedding(text: str, model="text-embedding-ada-002"):
     return response.data[0].embedding
 
 def recall_by_embedding_similarity(list_predict, list_actual, threshold=0.85):
+
     if not list_actual:
         return 0.0  # Avoid division by zero
+
+    if list_actual == None or list_actual==[""]: list_actual = ["None"]
+    if list_predict == None or list_predict==[""]: list_predict = ["None"]
 
     # Get embeddings
     embeddings_pred = [get_embedding(pred) for pred in list_predict]
@@ -266,118 +264,75 @@ def recall_by_embedding_similarity(list_predict, list_actual, threshold=0.85):
     recall = true_positive / len(list_actual)
     return recall
 
+def _calc_tools_acc(
+    tools_called  : list[str],
+    tools_expected: list[str]
+)->float:
+    TP = len(set(tools_called).intersection(set(tools_expected)))
+    FN = len(set(tools_expected).difference(set(tools_called)))
+    if TP+FN == 0:
+        recall = 1
+    else:
+        recall = float(TP/(TP+FN))
+    return recall
 
 def _eval_datapoint(datapoint):
 
-    dp_id = datapoint["id"]
-    dp_ui = datapoint["user_input"]
-    
-    tcs_levenstein_dist = _calc_levenstein(datapoint["expected_tcs"], datapoint["actual_tcs"])
-    # if "RAG" in datapoint["expected_tools"].keys():
-        
-    #     RAG_inputs_agg = 
-    rag_ins  = ""
-    ws_ins   = ""
-    plnn_ins = ""
-    
-    for inter_ in datapoint["actual_tcs"]:
-        for call_ in inter_:
-            if call_["name"] == "RAG": rag_ins+=call_["args"]["query"]
-            if call_["name"] == "tavily_search": ws_ins+=','.join(call_["args"]["queries"])
-            if call_["name"] == "Planner": plnn_ins+=call_["args"]["full_plan_text"]
-    
-    tool_ins_res = {}
+    dp_id = datapoint["id_data"]["id"]
+    dp_ui = datapoint["id_data"]["question"]
 
-    tool_names = ["RAG", "tavily_search", "Planner"]
-        
-    if "RAG" in datapoint["expected_tools"].keys():
-        if len(rag_ins)==0:
-            tool_ins_res["input_RAG_sim"]=1
-        else: tool_ins_res["input_RAG_sim"] = recall_by_embedding_similarity([rag_ins], [datapoint["expected_tools"]["RAG"]])
-    if "tavily_search" in datapoint["expected_tools"]:
-        if len(ws_ins)==0:
-            tool_ins_res["input_WS_sim"]=1
-        else: tool_ins_res["input_WS_sim"] = recall_by_embedding_similarity([ws_ins], [datapoint["expected_tools"]["tavily_search"]])
-    if "Planner" in datapoint["expected_tools"]:
-        if len(plnn_ins)==0:
-            tool_ins_res["input_Pln_sim"]=1
-        else: tool_ins_res["input_Pln_sim"] = recall_by_embedding_similarity([plnn_ins], [datapoint["expected_tools"]["Planner"]])
+    tools_called   = datapoint["outputs"].get("tools_called", [])
+    tools_expected = datapoint["inputs"].get("tools_names", []) 
 
-    print(tool_ins_res)
+    tcs_called   = datapoint["outputs"].get("tcs", [])
+    tcs_expected = datapoint["inputs"].get("tcs", [])
 
-    return {
-        "QID":dp_id,
-        "Question": dp_ui,
-        "TCS_Levenstein": tcs_levenstein_dist,
-        "tool_inputs": tool_ins_res
+    args_expected = datapoint["inputs"].get("tools_inputs", {})
+    args_llm      = datapoint["outputs"].get("tools_inputs", {})
+    
+    # tcs calcs
+    tool_acc            = _calc_tools_acc(tools_called, tools_expected)
+    tcs_levenstein_dist = _calc_levenstein(tcs_expected, tcs_called)
+    
+    # Inputs calcs
+    tp_tools = list(set(tools_called).intersection(set(tools_expected)))
+    print(f"TP TOOLS: {tools_called, tools_expected}")
+    inputs_eval_dict = {}
+    for tn_ in tp_tools:
+        if "get_time_now" in tn_: continue
+        if tn_ == "RAG" or tn_ == "tavily_search":
+            args_llm_ = args_llm.get(tn_, [])
+        else:
+            args_llm_ = [args_llm.get(tn_, "None")]
+        args_expected_ = [args_expected.get(tn_, "None")]
+        try:
+            inputs_eval_dict[f"{tn_}_args_recall"] = recall_by_embedding_similarity(args_llm_, args_expected_, 0.5)
+        except:
+            inputs_eval_dict[f"{tn_}_args_recall"] = 0
+    res = {
+        "question": dp_ui,
+        "tcs_actual": tcs_called,
+        "tcs_expected": tcs_expected,
+        "tools_called_acc": tool_acc,
+        "tcs_levenstein_dist": tcs_levenstein_dist
     }
-    
-eval_results          = json.load(open(EVAL_DATA_PATH, 'r'))
-levenstein_dist_total = 0
 
-def _eval_all(
+    res.update(inputs_eval_dict)
+    print(f"INPUT EVAL: {inputs_eval_dict}")
+    
+    return res
+
+def eval_all(
     eval_results: List[dict]
 ):
     res = []
     for datapoint in eval_results:
-        res.append(_eval_datapoint(datapoint))
+        res_dp = _eval_datapoint(datapoint)
+        res.append(res_dp)
     
     print(res)
     return pd.DataFrame(res)
 
+infered_dataset       = json.load(open(INFERED_DATA_PATH, 'r'))
 
-_eval_all(eval_results).to_csv("per_row_report.csv")
-
-# print(f"Avg Levenstein: {levenstein_dist_total/len(eval_results)}")
-
-# for run_ in eval_results:
-
-#     tools_called = []
-#     for msg in run_["state"]["messages"]:
-#         tools_called += getattr(msg, "tool_calls", [])
-
-#     tools_called = [_["name"] for _ in tools_called]
-#     print(tools_called)
-
-#     # Collect data for evaluation
-#     input          = run_["user_input"]
-#     actual_output  = run_["state"]["messages"][-1].content if len(run_["state"]["messages"])>0 else ""
-#     tools_called   = [ToolCall(name=n) for n in list(set(tools_called))]
-#     expected_tools = [ToolCall(name=n) for n in run_["ideal_tools"]] if run_["ideal_tools"] is not None else []
-
-#     # Skip cases that does not require a tool chain
-#     expected_tcs  = run_["tcs"] if run_["tcs"] is not None else []
-#     if expected_tcs is not []:
-#         tcs           = tools_called
-#         max_len       = max(len(expected_tcs), len(tcs))
-#         lvs_dist      = textdistance.levenshtein.distance(tcs,expected_tcs)
-#         if max_len == 0:
-#             norm_lvs_dist = 1    
-#         else: norm_lvs_dist = lvs_dist/max_len
-#         sum_norm_lvs += norm_lvs_dist
-#         count_cases  += 1
-
-#     test_case = LLMTestCase(
-#         input          = input,
-#         actual_output  = actual_output,
-#         tools_called   = tools_called,
-#         expected_tools = expected_tools
-#     )
-
-#     test_cases.append(test_case)
-
-# tools_correctness = ToolCorrectnessMetric(strict_mode=False)
-# answer_revelancy  = AnswerRelevancyMetric(threshold=0.7, model="gpt-4.1-nano", include_reason=True)
-
-
-# # Run metrics
-# # Tools Accuracy
-# evaluate(
-#     test_cases     = test_cases, 
-#     metrics        = [tools_correctness, answer_revelancy],
-#     display_config = DisplayConfig(
-#                             verbose_mode=False,
-#                             show_indicator=True
-#                         )
-# )
-# print(f"TCS_LevensteinDist_avg : {sum_norm_lvs/count_cases}")
+eval_all(infered_dataset).to_csv("per_row_report.csv")

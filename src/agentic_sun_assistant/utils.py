@@ -113,7 +113,7 @@ async def tavily_search(queries: List[str]) -> str:
         formatted_output += f"URL: {url}\n\n"
         formatted_output += f"SUMMARY:\n{result['content']}\n\n"
         if result.get('raw_content'):
-            formatted_output += f"FULL CONTENT:\n{result['raw_content'][:30000]}"  # Limit content size
+            formatted_output += f"FULL CONTENT:\n{result['raw_content'][:10000]}"  # Limit content size
         formatted_output += "\n\n" + "-" * 80 + "\n"
     
     if unique_results:
