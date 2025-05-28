@@ -1,4 +1,5 @@
-from typing import TypedDict, Optional
+from typing_extensions import TypedDict
+from typing import Optional
 from pydantic import BaseModel, Field
 
 # define state graph
