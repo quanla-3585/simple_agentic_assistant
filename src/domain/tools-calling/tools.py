@@ -1,21 +1,14 @@
 
-from typing import List, Annotated, TypedDict, operator, Literal, Optional
+from typing import List, Optional
 from pydantic import BaseModel, Field
 from enum import Enum
 
-from langchain.chat_models import init_chat_model
 from langchain_core.tools import tool
-from langchain_core.runnables import RunnableConfig
-from langgraph.graph import MessagesState
 
-from langgraph.types import Command, Send
-from langgraph.graph import START, END, StateGraph
+from shared.settings.main.configuration import Configuration
+from shared.agent.state import *
 
-from agentic_sun_assistant.configuration import Configuration
-from agentic_sun_assistant.utils import *
-from agentic_sun_assistant.prompts import *
-from agentic_sun_assistant.state import *
-
+from .utils import *
 
 class DepartmentEnum(str, Enum):
     rnd = 'RND'

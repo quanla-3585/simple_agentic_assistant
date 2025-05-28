@@ -1,0 +1,681 @@
+[
+  {
+    "id_data": {
+      "id": 2,
+      "question": "Giờ làm việc theo quy định của công ty bắt đầu vào lúc nào?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "giờ làm việc"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": "Collect working hour information through RAG",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_names": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": "\"Quy định về giờ làm việc\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 3,
+      "question": "Tôi cảm ơn, hết rồi."
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "get_time_now"
+      ],
+      "tools_called": [
+        "get_time_now"
+      ],
+      "tools_inputs": {}
+    },
+    "inputs": {
+      "reasoning_rubrics": "Formal greetings",
+      "tcs": [],
+      "tools_names": [],
+      "tools_inputs": {}
+    }
+  },
+  {
+    "id_data": {
+      "id": 4,
+      "question": "Còn bao nhiêu phút nữa là kết thúc ca làm việc buổi chiều?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "get_time_now"
+      ],
+      "tools_called": [
+        "get_time_now"
+      ],
+      "tools_inputs": {}
+    },
+    "inputs": {
+      "reasoning_rubrics": "Collect time now\nCollect working hour information through RAG",
+      "tcs": [
+        "get_time_now",
+        "RAG"
+      ],
+      "tools_names": [
+        "get_time_now",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": "\"Quy định về giờ làm việc\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 5,
+      "question": "tôi submit hợp đồng 8 ngày rồi mà chưa được trả lại thì tôi cần làm gì?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "submit hợp đồng 8 ngày chưa được trả lại cần làm gì"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": "Collect overall contract processing info through RAG\nPlanner for next steps for contract processing\nCollect detailed contract processing info through RAG",
+      "tcs": [
+        "RAG",
+        "Planner",
+        "RAG"
+      ],
+      "tools_names": [
+        "Planner",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan tìm quy trình xử lý hợp đồng)\n(Plan để tìm thông tin liên hệ của Sun*)",
+        "RAG": "\"Quy định về trình ký và duyệt hợp đồng\"\n\"Thông tin liên hệ Sun*\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 6,
+      "question": "Tôi cần làm gì sau khi hoàn thành soạn thảo hợp đồng?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "các bước cần thực hiện sau khi hoàn thành soạn thảo hợp đồng"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": "Collect overall contract processing info through RAG",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_names": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": "\"Quy trình chung về soạn thảo hợp đồng\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 7,
+      "question": "Tôi muốn có một kế hoạch học làm bánh chi tiết dài 20 ngày, với nguyên liệu chủ yếu là hoa quả trong mùa này và có sẵn ở Việt Nam."
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "tavily_search"
+      ],
+      "tools_called": [
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "tavily_search": [
+          "kế hoạch học làm bánh 20 ngày,công thức bánh sử dụng hoa quả Việt Nam,làm bánh với nguyên liệu mùa này ở Việt Nam"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": "Get current month in year\nOnline search for cake recipies\nStudy plan",
+      "tcs": [
+        "Planner",
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "tools_names": [
+        "Planner",
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan để học làm bánh trong 20 ngày)\n(Plan tìm nguyên liệu phù hợp với thời điểm hiện tại)\n(Plan tìm thời điểm hiện tại",
+        "tavily_search": "(Các loại bánh dễ làm), (Hoa quả phổ biến ở Việt Nam)"
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 8,
+      "question": "Kỳ World Cup tiếp theo được tổ chức ở đâu và còn bao nhiêu tháng nữa là tới mùa bóng lăn?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "get_time_now",
+        "tavily_search"
+      ],
+      "tools_called": [
+        "get_time_now",
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "tavily_search": [
+          "World Cup next venue,next World Cup 2026 location"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": "Get today's date\nOnline search for next WC info\nDo the substraction to find the days left",
+      "tcs": [
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "tools_names": [
+        "get_time_now()",
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "tavily_search": "Kỳ World Cup tiếp theo"
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 9,
+      "question": "Còn bao nhiêu ngày nữa để chuẩn bị trước khi kỳ kiểm tra tiêu chuẩn ISO định kỳ lần kế tiếp của công ty diễn ra? Tôi cần một phương án học tập phù hợp với lượng thời gian này. "
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "get_time_now"
+      ],
+      "tools_called": [
+        "get_time_now"
+      ],
+      "tools_inputs": {}
+    },
+    "inputs": {
+      "reasoning_rubrics": "Search for company issued ISO test time (will fail) \nGet today's date\nSearch online for known ISO test time \nStudy plan",
+      "tcs": [
+        "get_time_now()",
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "tools_names": [
+        "Planner",
+        "get_time_now()",
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan tìm thời gian còn lại cho đến kỳ ISO tiếp theo)\n(Plan để ôn tập cho kỳ thi ISO)",
+        "tavily_search": "(Các phương pháp học tập nhanh chóng & hiệu quả)\n",
+        "RAG": "\"thi ISO định kỳ\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 10,
+      "question": "Tôi cần soạn thảo đầy đủ một hợp đồng thử việc theo quy định của pháp luật hiện hành và quy định của công ty."
+    },
+    "outputs": {
+      "final_answer": "No answer collected.",
+      "reasoning_texts_agg": "No reasoning traces collected",
+      "tcs": [],
+      "tools_called": [],
+      "tools_inputs": {}
+    },
+    "inputs": {
+      "reasoning_rubrics": "Online search for labor law in Vietnam\nCollect template or info about SunAsterisks's fulltime contract\nPlanning for more contract details",
+      "tcs": [
+        "Planner",
+        "RAG",
+        "tavily_search"
+      ],
+      "tools_names": [
+        "Planner",
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan soạn thảo hợp đồng lao động)",
+        "tavily_search": "(Quy định soạn thảo hợp đồng thử việc)",
+        "RAG": "\"Hợp đồng thử việc\", \"Quy định thử việc\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 11,
+      "question": "Bộ phận IFU đi du lịch ở đâu vào năm 2024?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "Bộ phận IFU đi du lịch ở đâu vào năm 2024?"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "tavily_search"
+      ],
+      "tools_names": [
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "tavily_search": "(IFU du lịch 2024)"
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 12,
+      "question": "Lên kế hoạch cho du lịch hè ở Quy Nhơn cho nhóm 30 người, trong khoảng ngân sách 8tr/1 người"
+    },
+    "outputs": {
+      "final_answer": "No answer collected.",
+      "reasoning_texts_agg": "No reasoning traces collected",
+      "tcs": [],
+      "tools_called": [],
+      "tools_inputs": {}
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "Planner",
+        "tavily_search",
+        "tavily_search"
+      ],
+      "tools_names": [
+        "Planner",
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan lên kế hoạch du lịch hè cho 30 người)",
+        "tavily_search": "(Địa điểm du lịch Quy Nhơn)\n(Chí phí du lịch Quy Nhơn)"
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 13,
+      "question": "Thời tiết ở Ninh Bình và dự đoán nhu cầu du lịch ở đó trong tháng 8?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "tavily_search"
+      ],
+      "tools_called": [
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "tavily_search": [
+          "Thời tiết Ninh Bình tháng 8,Dự đoán nhu cầu du lịch Ninh Bình tháng 8"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "Planner",
+        "tavily_search",
+        "Planner",
+        "tavily_search"
+      ],
+      "tools_names": [
+        "Planner",
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan tìm thời tiết Ninh Bình trong tháng 8)\n(Plan tìm nhu cầu du lịch Ninh Bình trong tháng 8)",
+        "tavily_search": "(Thời tiết Ninh Bình)\n(Thống kê lượt khách du lịch Ninh Bình)"
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 14,
+      "question": "Lập kế hoạch onboard thực tập sinh với mục tiêu giúp các nhân lực mới làm quen với quy trình, văn hóa và lịch sử của công ty,"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "onboard thực tập sinh quy trình văn hóa lịch sử"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "Planner",
+        "tavily_search",
+        "planner",
+        "RAG",
+        "RAG",
+        "RAG"
+      ],
+      "tools_names": [
+        "Planner",
+        "planner",
+        "RAG",
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "Planner": "(Plan onboard cho thực tập sinh)\n(Plan giúp nhân lực làm quen quỳ trình văn hóa lsu công ty)",
+        "RAG": "\"Quy trình công ty\"\n\"Văn hóa công ty\"\n\"Lịch sử công ty\"",
+        "tavily_search": "(Hoạt động onboard cho thực tập sinh)"
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 15,
+      "question": "Chính sách nghỉ thai sản cho nam giới của công ty?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "Chính sách nghỉ thai sản cho nam giới"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "RAG"
+      ],
+      "tools_names": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": "\"Chính sách thai sản cho nam giới\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 16,
+      "question": "Tóm tắt về quy trình duyệt và lưu trữ cho văn bản đi trong nội quy của công ty. Đối chiếu quy trình này với chuẩn ISO mới nhất để tìm ra điểm lỗi thời của quy trình công ty. Tập trung vào văn bản kỹ thuật số có tính bảo mật cao. Lên kế hoạch phổ biến và áp dụng tiêu chuẩn mới nhất nếu cần."
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG",
+        "tavily_search"
+      ],
+      "tools_called": [
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "quy trình duyệt và lưu trữ văn bản"
+        ],
+        "tavily_search": [
+          "ISO standards,ISO requirements for document control,ISO standards for digital document security"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "RAG",
+        "tavily_search",
+        "tavily_search",
+        "Planner"
+      ],
+      "tools_names": [
+        "Planner",
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "Planner": "(Kế hoạch phổ biến và áp dụng chuẩn ISO mới)",
+        "tavily_search": "(Tiêu chuẩn ISO về lưu trữ bảo mật văn bản đi mới nhất)",
+        "RAG": "\"tiêu chuẩn ISO về lưu trữ bảo mật văn bản đi\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 17,
+      "question": "Tôi bị mất quyền truy cập vào email công ty, tôi nên liên hệ ai và làm gì để khôi phục?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "tavily_search"
+      ],
+      "tools_called": [
+        "tavily_search"
+      ],
+      "tools_inputs": {
+        "tavily_search": [
+          "khôi phục quyền truy cập email công ty,mất quyền truy cập email doanh nghiệp,liên hệ hỗ trợ IT email công ty"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "RAG",
+        "tavily_search"
+      ],
+      "tools_names": [
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "tavily_search": "(Nhân viên phòng IT Sun Asterisk)",
+        "RAG": "\"quy trình cấp phát và đổi mới tài khoản nhân viên\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 18,
+      "question": "Hãy đối chiếu quy trình onboarding hiện tại của công ty với các best practice toàn cầu, chỉ ra điểm thiếu sót, và đưa ra kế hoạch sửa đổi, bao gồm đào tạo cho các bộ phận liên quan."
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG",
+        "tavily_search"
+      ],
+      "tools_called": [
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "onboarding process"
+        ],
+        "tavily_search": [
+          "current onboarding process,onboarding best practices,improving onboarding process,training for onboarding improvements"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "tools_names": [
+        "Planner",
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "Planner": "(Kế hoạch onboarding cho nhân viên mới)",
+        "tavily_search": "(Quy trình onboarding theo tiêu chuẩn quốc tế)",
+        "RAG": "\"quy trình onboarding\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 19,
+      "question": "Tôi cần biết thời gian xử lý trung bình của phòng pháp chế với yêu cầu rà soát hợp đồng nội bộ. Nếu không có số liệu cụ thể trong tài liệu, hãy tra cứu quy chuẩn ngành và đề xuất KPI nội bộ."
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG",
+        "tavily_search"
+      ],
+      "tools_called": [
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "thời gian xử lý trung bình phòng pháp chế hợp đồng nội bộ"
+        ],
+        "tavily_search": [
+          "quy chuẩn ngành phòng pháp chế,KPI nội bộ phòng pháp chế"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "RAG",
+        "RAG",
+        "tavily_search",
+        "Planner"
+      ],
+      "tools_names": [
+        "Planner",
+        "tavily_search",
+        "RAG"
+      ],
+      "tools_inputs": {
+        "Planner": "(Kế hoạch khảo sát-đề xuất, thử nghiệm và ứng dụng tiêu chuẩn mới)",
+        "tavily_search": "(Quy trình tiêu chuẩn xử lý rà soát hợp đồng nội bộ)",
+        "RAG": "\"thời gian xử lý yêu cầu rà soát hợp đồng của phòng pháp chế\""
+      }
+    }
+  },
+  {
+    "id_data": {
+      "id": 20,
+      "question": "Employee Handbook của Sun Asterisk được lưu trữ ở đâu?"
+    },
+    "outputs": {
+      "final_answer": "",
+      "reasoning_texts_agg": "",
+      "tcs": [
+        "RAG"
+      ],
+      "tools_called": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": [
+          "Employee Handbook"
+        ]
+      }
+    },
+    "inputs": {
+      "reasoning_rubrics": null,
+      "tcs": [
+        "RAG"
+      ],
+      "tools_names": [
+        "RAG"
+      ],
+      "tools_inputs": {
+        "RAG": "\"Employee Handbook\""
+      }
+    }
+  }
+]
